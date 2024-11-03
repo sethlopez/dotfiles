@@ -5,13 +5,12 @@
 
 #-- Changing Directories -------------------------------------------------------
 
-# don't require `cd` to change directories
-setopt auto_cd
+# none
 
 #-- Completion -----------------------------------------------------------------
 
-setopt auto_menu
-unsetopt menu_complete
+# make the completion list smaller by using columns with different widths
+setopt list_packed
 
 #-- Expansion and Globbing -----------------------------------------------------
 
@@ -20,16 +19,16 @@ unsetopt menu_complete
 #-- History --------------------------------------------------------------------
 
 # set the location of the history file
-HISTFILE=~/.zsh-history
+HISTFILE="$HOME/.history"
 # the maximum number of events stored in the internal history list
 HISTSIZE=1000
 # the maximum number of history events to save in the history file
 SAVEHIST=1000
-# incrementally add events to $HISTFILE instead of waiting for the shell to exit
+# add commands to history as soon as they're entered rather than on shell exit
 setopt inc_append_history
-# do not enter event if it is a duplicate of the previous event
+# do not enter duplicate commands
 setopt hist_ignore_dups
-# do not enter command lines into the history if they begin with a blank
+# do not enter commands into the history if they begin with a space
 setopt hist_ignore_space
 
 #-- Initialization -------------------------------------------------------------
@@ -38,7 +37,7 @@ setopt hist_ignore_space
 
 #-- Input / Output -------------------------------------------------------------
 
-# none
+setopt correct
 
 #-- Job Control ----------------------------------------------------------------
 
@@ -62,10 +61,9 @@ setopt prompt_subst
 
 #-- ZLE ------------------------------------------------------------------------
 
-# enable vi emulation for zsh line editing
+# enable vi emulation
 bindkey -v
-
-# other key bindings
+# rebind backward history search
 bindkey "^R" history-incremental-search-backward
 
 #==============================================================================#
@@ -74,12 +72,6 @@ bindkey "^R" history-incremental-search-backward
 
 #-- compinstall ----------------------------------------------------------------
 
-# see: https://docs.brew.sh/Shell-Completion
-if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
-fi
-
-zstyle :compinstall filename '/Users/sethlopez/.zshrc'
 autoload -Uz compinit
 compinit
 
@@ -92,13 +84,10 @@ colors
 # sources                                                                      #
 #==============================================================================#
 
-source $HOME/.exports
-source $HOME/.aliases
-source $HOME/.zsh-prompt
+source "$HOME/.exports"
+source "$HOME/.aliases"
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# load private exports and aliases/functions
+test -e "$HOME/.private/zshrc" && source "$HOME/.private/zshrc"
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
+source "$HOME/.zsh-prompt"

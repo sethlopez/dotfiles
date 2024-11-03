@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+###
+## DOWNLOAD
+## ---
+## Download dotfiles from GitHub.
+###
+
 TARGET="$HOME/dotfiles"
 TMP_TARGET="/tmp/dotfiles"
 REPOSITORY="https://github.com/sethlopez/dotfiles"
-TARBALL="$REPOSITORY/tarball/master"
-REPLY=""
+TARBALL="$REPOSITORY/tarball/main"
 
 if [ -d "$TARGET" ]; then
-    echo "$TARGET already exists. Overwrite? (y/N)" >&2
-    read -re -t 15
-    if [[ -z $REPLY ]] || [[ $REPLY == [nN]* ]]; then
+    echo -e -n "$TARGET already exists. Overwrite? (y/N) "
+    read -re -t 15 OVERWRITE_REPLY
+    if [[ -z $OVERWRITE_REPLY ]] || [[ $OVERWRITE_REPLY == [nN]* ]]; then
         echo "Exiting."
         exit 1
     fi
@@ -24,10 +29,6 @@ fi
 echo "Downloading dotfiles..."
 mkdir -p "$TMP_TARGET"
 curl -fsSL "$TARBALL" | tar -xz -C "$TMP_TARGET" --strip-components=1
-if [ -d "$TARGET" ]; then
-    rm -rf "$TARGET"
-fi
-mv "$TMP_TARGET" "$TARGET"
-rm -rf "$TMP_TARGET"
-echo "Download complete!"
-echo "Run '$TARGET/dot.sh install' to start installation."
+test -d "$TARGET" && rm -rf "$TARGET"
+mv -f "$TMP_TARGET" "$TARGET"
+echo "Done. Dotfiles located at $TARGET."

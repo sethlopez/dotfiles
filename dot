@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+###
+## DOT
+## ---
+## Manage local dotfiles.
+###
+
+DOTFILES=$(realpath "$(dirname $0)")
+cd "$DOTFILES"
+
+USAGE="Usage: dot [ install | macos-setup | upgrade | uninstall ]"
+if [ $# -gt 0 ]; then
+    case "$1" in
+        install)
+            source "install.sh"
+            ;;
+        macos-setup)
+            source "macos-setup.sh"
+            ;;
+        upgrade)
+            source "uninstall.sh"
+            source "download.sh"
+            echo "Run 'dot install' to finish upgrade."
+            ;;
+        uninstall)
+            source "uninstall.sh"
+            ;;
+        *)
+            echo "$USAGE"
+            exit 1
+            ;;
+    esac
+else
+    echo "$USAGE"
+fi

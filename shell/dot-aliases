@@ -1,6 +1,14 @@
 #-- General Aliases ------------------------------------------------------------
 
-alias l='ls -ahlFG'
+# list directory contents in a human readable format
+#   -A: list [a]ll contents, including dotfiles, excluding '.' and '..'
+#   -l: list contents in [l]ong format, including permissions, owner, size, etc
+#   -F: add an indicator character for directories, symbolic links, etc
+#   -h: display sizes in a [h]uman readable format
+#   -G: enable colorized output
+alias l='ls -AlFhG'
+# list recursively
+alias lr='ls -AlFhGR'
 
 #-- Git ------------------------------------------------------------------------
 
@@ -41,3 +49,9 @@ alias gsl='git stash list'
 # remote
 alias gp='git push'
 alias gpl='git pull'
+
+#-- Android --------------------------------------------------------------------
+
+alias avdl='emulator -list-avds'
+# see: https://developer.android.com/studio/run/emulator-commandline
+function avd() { emulator -avd "$1" -no-snapshot -no-boot-anim -netfast }

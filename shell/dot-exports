@@ -1,20 +1,23 @@
 #-- Path -----------------------------------------------------------------------
 
+# add ~/bin
 export PATH=$HOME/bin:$PATH
-export PATH=$PATH:$HOME/.cargo/bin
+# add ~/dotfiles
+export PATH=$PATH:$HOME/dotfiles
+
+# android cli tools
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
 export PATH=$PATH:$ANDROID_HOME/platform-tools
-export PATH=$PATH:$HOME/Library/Android/sdk/emulator
-export PATH=$PATH:$HOME/flutter/bin
+export PATH=$PATH:$ANDROID_HOME/emulator
 
 #-- Miscellaneous --------------------------------------------------------------
 
-export EDITOR=nvim
-export VISUAL=nvim
-
-#-- Load private exports -------------------------------------------------------
-
-if [ -e $HOME/.exports-private ]; then
-  source $HOME/.exports-private
+if command -v "nvim" > /dev/null 2>&1; then
+    export EDITOR=nvim
+    export VISUAL=nvim
+else
+    export EDITOR=vim
+    export VISUAL=vim
 fi

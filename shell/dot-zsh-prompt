@@ -77,7 +77,7 @@ function __prompt__git_short_sha {
 }
 
 # appears before git info
-__prompt__git_info__prefix=" on %F{yellow}±%f"
+__prompt__git_info__prefix=" on %F{yellow}git:%f"
 # appears after git info
 __prompt__git_info__suffix=""
 # ahead status
