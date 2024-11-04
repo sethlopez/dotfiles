@@ -19,11 +19,11 @@ setopt list_packed
 #-- History --------------------------------------------------------------------
 
 # set the location of the history file
-HISTFILE="$HOME/.history"
+HISTFILE="$HOME/.zsh_history"
 # the maximum number of events stored in the internal history list
-HISTSIZE=1000
+HISTSIZE=5000
 # the maximum number of history events to save in the history file
-SAVEHIST=1000
+SAVEHIST=5000
 # add commands to history as soon as they're entered rather than on shell exit
 setopt inc_append_history
 # do not enter duplicate commands
