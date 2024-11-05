@@ -406,7 +406,7 @@ if [[ $MACOS_PREFS_REPLY == [yY]* ]]; then
     _print_result
     # Hide recent tags
     _print "Hiding recent tags in Finder..."
-    defaults wrote com.apple.finder ShowRecentTags -bool false
+    defaults write com.apple.finder ShowRecentTags -bool false
     _print_result
     # hide all desktop icons
     _print "Disabling all Desktop icons..."
@@ -447,10 +447,6 @@ if [[ $MACOS_PREFS_REPLY == [yY]* ]]; then
         '{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
         '{"enabled" = 0;"name" = "MESSAGES";}' \
         '{"enabled" = 0;"name" = "SOURCE";}'
-    _print_result
-    # load new settings before rebuilding the index
-    _print "Changing Spotlight indexing order and disabling some search results [2/4]..."
-    killall mds > /dev/null 2>&1
     _print_result
     # make sure indexing is enabled for the main volume
     _print "Changing Spotlight indexing order and disabling some search results [3/4]..."
