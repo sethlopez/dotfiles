@@ -8,5 +8,5 @@ set -euo pipefail
 ###
 
 echo "Uninstalling dotfiles..."
-stow --delete --dotfiles --no-folding git ideavim nvim shell vim zed
+stow --delete --dotfiles --no-folding git ideavim nvim shell vim zed zsh
 echo "Done."

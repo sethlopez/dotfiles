@@ -8,5 +8,5 @@ set -euo pipefail
 ###
 
 echo "Installing dotfiles..."
-stow --dotfiles --no-folding git ideavim nvim shell vim zed
+stow --dotfiles --no-folding git ideavim nvim shell vim zed zsh
 echo "Done."

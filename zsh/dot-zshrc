@@ -84,10 +84,15 @@ colors
 # sources                                                                      #
 #==============================================================================#
 
+# load private zshrc
+test -e "$HOME/.private/zshrc" && source "$HOME/.private/zshrc"
+
+# load exports and aliases
 source "$HOME/.exports"
 source "$HOME/.aliases"
 
-# load private exports and aliases/functions
-test -e "$HOME/.private/zshrc" && source "$HOME/.private/zshrc"
+# load private exports and aliases
+test -e "$HOME/.private/exports" && source "$HOME/.private/exports"
+test -e "$HOME/.private/aliases" && source "$HOME/.private/aliases"
 
 source "$HOME/.zsh-prompt"
