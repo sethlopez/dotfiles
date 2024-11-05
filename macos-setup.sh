@@ -537,9 +537,8 @@ if command -v brew > /dev/null 2>&1; then
     read -re -n 1 -t 15 BREWFILE_REPLY
     # install if the user replied y/Y or accepted the default (empty response)
     if [[ $BREWFILE_REPLY == [yY]* ]]; then
-        _print "Installing/Upgrading applications in Brewfile via Homebrew..."
+        echo "Installing/Upgrading applications in Brewfile via Homebrew..."
         brew bundle --file="./Brewfile"
-        _print_result
     fi
 fi
 
