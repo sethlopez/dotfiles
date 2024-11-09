@@ -95,8 +95,6 @@ source "$HOME/.aliases"
 test -e "$HOME/.private/exports" && source "$HOME/.private/exports"
 test -e "$HOME/.private/aliases" && source "$HOME/.private/aliases"
 
-source "$HOME/.zsh-prompt"
-
 #==============================================================================#
 # prompt                                                                       #
 #==============================================================================#
