@@ -1,1 +1,108 @@
-source ~/.vimrc
+" You can find a list of commands here: https://jb.gg/h38q75
+" Find more examples here: https://jb.gg/share-ideavimrc
+
+" LEADER
+" =============================================================================
+let mapleader = " "
+
+
+" BASIC SETTINGS
+" =============================================================================
+" show the mode and command
+set showmode
+set showcmd
+" display hybrid line numbers
+set number
+set relativenumber
+" minimum lines to show above/below cursor
+set scrolloff=10
+" do case-insensitive searching
+set ignorecase
+" do case-sensitive searching if search contains capitals
+set smartcase
+" do incremental searching
+set incsearch
+" highlight search results
+set hlsearch
+
+
+" IDEAVIM SETTINGS
+" =============================================================================
+" smart line concatenation
+set ideajoin
+" use the IDE's paste operation rather than a simple insertion
+set ideaput
+" use the IDE's bookmarks rather than vim's marks
+set ideamarks
+" set a longer timeout for motions; for which-key
+set timeoutlen=5000
+
+
+" ENABLE PLUGINS
+" =============================================================================
+" highlight yanks
+set highlightedyank
+" toggle commented lines
+set commentary
+" add/change/delete surroundings in pairs, e.g. (), {}, [], <>, "", ''
+set surround
+" control the file explorer with vim motions
+"set nerdtree
+" display available keybindings in a popup
+set which-key
+
+
+" KEYMAPPINGS
+" =============================================================================
+" don't use Ex mode, use Q for formatting.
+map Q gq
+" vertically center the scrolled line on screen when half-paging up/down
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+" enable hlsearch when searching
+nnoremap / :set hlsearch<cr>/
+nnoremap ? :set hlsearch<cr>?
+" use ]e and [e to navigate errors
+nmap [e <Action>(GotoPreviousError)
+nmap ]e <Action>(GotoNextError)
+
+
+" LEADER KEYMAPPINGS
+" =============================================================================
+" toggle hlsearch
+nnoremap <leader>h :set invhlsearch<cr>
+let g:WhichKeyDesc_invhlsearch = "<leader>h toggle hlsearch"
+
+let g:WhichKeyDesc_git = "<leader>g git"
+" annotate lines with git blame
+nmap <leader>ga <Action>(Annotate)
+let g:WhichKeyDesc_git_Annotate = "<leader>ga annotate with git blame"
+
+let g:WhichKeyDesc_goto = "<leader>g goto"
+" goto next/previous error
+nmap <leader>ge <Action>(GotoNextError)
+let g:WhichKeyDesc_goto_GotoNextError = "<leader>ge goto next error"
+nmap <leader>gE <Action>(GotoPreviousError)
+let g:WhichKeyDesc_goto_GotoPreviousError = "<leader>gE goto previous error"
+" goto file
+nmap <leader>gf <Action>(GotoFile)
+let g:WhichKeyDesc_goto_GotoFile = "<leader>gf goto file"
+" goto recent file
+nmap <leader>gF <Action>(RecentFiles)
+let g:WhichKeyDesc_goto_RecentFiles = "<leader>gF goto recent file"
+
+let g:WhichKeyDesc_refactoring = "<leader>r refactoring"
+" rename
+nmap <leader>rn <Action>(RenameElement)
+let g:WhichKeyDesc_refactoring_RenameElement = "<leader>rn rename"
+" reformat
+nmap <leader>rf <Action>(ReformatCode)
+let g:WhichKeyDesc_refactoring_ReformatCode = "<leader>rf reformat"
+" show intention actions
+nmap <leader>ra <Action>(ShowIntentionActions)
+let g:WhichKeyDesc_refactoring_ShowIntentionActions = "<leader>ra show intention actions"
+
+let g:WhichKeyDesc_ideavim = "<leader>v ideavim"
+" ideavim
+nmap <leader>vv <Action>(IdeaVim.ReloadVimRc.reload)
+let g:WhichKeyDesc_ideavim_reload = "<leader>vv reload .ideavimrc"

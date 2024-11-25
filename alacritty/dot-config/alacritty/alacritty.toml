@@ -1,0 +1,4 @@
+[window]
+dimensions = { columns = 120, lines = 50 }
+padding = { x = 20, y = 20 }
+decorations = "Buttonless"
