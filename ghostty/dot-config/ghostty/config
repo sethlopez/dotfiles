@@ -1,2 +1,17 @@
-font-family = "JetBrainsMono Nerd Font Mono"
-theme = "Adventure"
+# behavior
+confirm-close-surface = false
+quit-after-last-window-closed = true
+initial-window = true
+
+# window defaults
+window-padding-x = 10
+window-padding-y = 10
+window-padding-balance = true
+window-padding-color = extend-always
+# this doesn't seem to work
+#macos-titlebar-style = transparent
+macos-titlebar-style = hidden
+
+# appearance
+theme = Adventure
+font-family = JetBrainsMono Nerd Font Mono
