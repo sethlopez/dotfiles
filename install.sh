@@ -8,5 +8,14 @@ set -euo pipefail
 ###
 
 echo "Installing dotfiles..."
-stow --dotfiles --no-folding alacritty git ideavim nvim shell vim zed zsh
+stow --dotfiles --no-folding \
+    alacritty \
+    ghostty \
+    git \
+    ideavim \
+    nvim \
+    shell \
+    vim \
+    zed \
+    zsh
 echo "Done."
