@@ -158,5 +158,5 @@ function precmd() {
     local newline
     newline=$'\n'
 
-    PS1="$newline$info_line$newline$prompt_line"
+    PS1="$info_line$newline$prompt_line"
 }
