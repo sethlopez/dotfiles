@@ -2,15 +2,16 @@
 confirm-close-surface = false
 quit-after-last-window-closed = true
 initial-window = true
+macos-auto-secure-input = false
 
 # window defaults
 window-padding-x = 10
 window-padding-y = 10
 window-padding-balance = true
 window-padding-color = extend-always
-# this doesn't seem to work
-#macos-titlebar-style = transparent
-macos-titlebar-style = hidden
+# https://ghostty.org/docs/config/reference#macos-titlebar-style
+# this doesn't seem to work as of 2025-02-19
+macos-titlebar-style = transparent
 
 # appearance
 theme = Adventure
