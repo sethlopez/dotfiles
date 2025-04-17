@@ -7,10 +7,9 @@ macos-auto-secure-input = false
 # window defaults
 window-height = 55
 window-width = 160
-window-padding-x = 10
-window-padding-y = 10
 window-padding-balance = true
 window-padding-color = extend
+window-step-resize = true
 # https://ghostty.org/docs/config/reference#macos-titlebar-style
 # this doesn't seem to work as of 2025-02-19
 macos-titlebar-style = transparent
@@ -18,3 +17,6 @@ macos-titlebar-style = transparent
 # appearance
 theme = Adventure
 font-family = JetBrainsMono Nerd Font Mono
+
+# keybinds
+keybind = global:super+escape=toggle_quick_terminal
