@@ -59,56 +59,70 @@ nnoremap <Left>  :echo "Use h to move!"<cr>
 nnoremap <Down>  :echo "Use j to move!"<cr>
 nnoremap <Up>    :echo "Use k to move!"<cr>
 nnoremap <Right> :echo "Use l to move!"<cr>
-
 " vertically center the scrolled line on screen when half-paging up/down
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
-
 " enable hlsearch when searching
 nnoremap / :set hlsearch<cr>/
 nnoremap ? :set hlsearch<cr>?
-" escape clears hlsearch in normal
+" escape clears hlsearch in normal mode
 nnoremap <Esc> :set nohlsearch<cr>
-
+" split navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+nmap <C-w>m <Action>(MoveEditorToOppositeSplit)
+nmap <C-w>M <Action>(MaximizeEditorInSplit)
+nmap <C-w>O <Action>(ChangeSplitOrientation)
+nmap <C-w>u <Action>(Unsplit)
 " use ]e and [e to navigate errors
 nmap [e <Action>(GotoPreviousError)
 nmap ]e <Action>(GotoNextError)
-
 " don't use Ex mode, use Q for formatting.
 map Q gq
-
-" LEADER KEYMAPPINGS
-" =============================================================================
-let g:WhichKeyDesc_git = "<leader>g git"
-" annotate lines with git blame
-nmap <leader>ga <Action>(Annotate)
-let g:WhichKeyDesc_git_Annotate = "<leader>ga annotate with git blame"
-
-let g:WhichKeyDesc_goto = "<leader>g goto"
-" goto next/previous error
-nmap <leader>ge <Action>(GotoNextError)
-let g:WhichKeyDesc_goto_GotoNextError = "<leader>ge goto next error"
-nmap <leader>gE <Action>(GotoPreviousError)
-let g:WhichKeyDesc_goto_GotoPreviousError = "<leader>gE goto previous error"
-" goto file
-nmap <leader>gf <Action>(GotoFile)
-let g:WhichKeyDesc_goto_GotoFile = "<leader>gf goto file"
-" goto recent file
-nmap <leader>gF <Action>(RecentFiles)
-let g:WhichKeyDesc_goto_RecentFiles = "<leader>gF goto recent file"
-
-let g:WhichKeyDesc_refactoring = "<leader>r refactoring"
-" rename
-nmap <leader>rn <Action>(RenameElement)
-let g:WhichKeyDesc_refactoring_RenameElement = "<leader>rn rename"
-" reformat
-nmap <leader>rf <Action>(ReformatCode)
-let g:WhichKeyDesc_refactoring_ReformatCode = "<leader>rf reformat"
 " show intention actions
-nmap <leader>ra <Action>(ShowIntentionActions)
-let g:WhichKeyDesc_refactoring_ShowIntentionActions = "<leader>ra show intention actions"
-
-let g:WhichKeyDesc_ideavim = "<leader>v ideavim"
+nmap <leader>a <Action>(ShowIntentionActions)
+" goto
+nmap <leader>gd <Action>(GotoDeclaration)
+nmap <leader>gi <Action>(GotoImplementation)
+nmap <leader>gt <Action>(GotoTypeDeclaration)
+" refactor
+nmap <leader>rf <Action>(ReformatCode)
+nmap <leader>rr <Action>(RenameElement)
+nmap <leader>rs <Action>(ChangeSignature)
+" files
+nmap <leader>fb <Action>(NewScratchBuffer)
+nmap <leader>ff <Action>(GotoFile)
+nmap <leader>fr <Action>(RecentFiles)
+nmap <leader>fs <Action>(NewScratchFile)
 " ideavim
-nmap <leader>vv <Action>(IdeaVim.ReloadVimRc.reload)
-let g:WhichKeyDesc_ideavim_reload = "<leader>vv reload .ideavimrc"
+nmap <leader>R <Action>(IdeaVim.ReloadVimRc.reload)
+
+
+" WHICH-KEY
+" =============================================================================
+" settings
+let g:WhichKey_FontSize = 16
+let g:WhichKey_SortCaseSensitive = "false"
+" diagnostics
+let g:WhichKeyDesc_Goto_GotoPreviousDiagnostic = "[e Goto: Previous [D]iagnostic"
+let g:WhichKeyDesc_Goto_GotoNextDiagnostic = "]e Goto: Next [D]iagnostic"
+" leader / root
+let g:WhichKeyDesc_refactoring_ShowIntentionActions = "<leader>a Show Intention [A]ctions"
+let g:WhichKeyDesc_ideavim_reload = "<leader>R [R]eload .ideavimrc"
+" leader / files
+let g:WhichKeyDesc_Files = "<leader>f [F]iles"
+let g:WhichKeyDesc_Files_NewScratchBuffer = "<leader>fb [F]iles: New Scratch [B]uffer"
+let g:WhichKeyDesc_Files_GotoFile = "<leader>ff [F]iles: Goto [F]ile"
+let g:WhichKeyDesc_Files_RecentFiles = "<leader>fr [F]iles: Goto [R]ecent File"
+let g:WhichKeyDesc_Files_NewScratchFile = "<leader>fs [F]iles: New [S]cratch File"
+" leader / goto
+let g:WhichKeyDesc_Goto = "<leader>g [G]oto"
+let g:WhichKeyDesc_Goto_GotoDeclaration = "<leader>gd [G]oto: [D]eclaration"
+let g:WhichKeyDesc_Goto_GotoImplementation = "<leader>gi [G]oto: [I]mplementation"
+let g:WhichKeyDesc_Goto_GotoTypeDeclaration = "<leader>gt [G]oto: [T]ype Declaration"
+" leader / refactor
+let g:WhichKeyDesc_Refactor_ReformatCode = "<leader>rf [R]efactor: Re[f]ormat"
+let g:WhichKeyDesc_Refactor_RenameElement = "<leader>rr [R]efactor: [R]ename"
+let g:WhichKeyDesc_Refactor_ChangeSignature = "<leader>rs [R]efactor: Change [S]ignature"
