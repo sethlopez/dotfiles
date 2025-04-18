@@ -1,5 +1,5 @@
-" You can find a list of commands here: https://jb.gg/h38q75
-" Find more examples here: https://jb.gg/share-ideavimrc
+" You can find a list of options here: https://jb.gg/h38q75
+" Find more configs here: https://jb.gg/share-ideavimrc
 
 " LEADER
 " =============================================================================
@@ -24,6 +24,8 @@ set smartcase
 set incsearch
 " highlight search results
 set hlsearch
+" remove timeout
+set notimeout
 
 
 " IDEAVIM SETTINGS
@@ -34,8 +36,6 @@ set ideajoin
 set ideaput
 " use the IDE's bookmarks rather than vim's marks
 set ideamarks
-" remove timeout; for which-key
-set notimeout
 
 
 " ENABLE PLUGINS
@@ -46,13 +46,11 @@ set highlightedyank
 set commentary
 " add/change/delete surroundings in pairs, e.g. (), {}, [], <>, "", ''
 set surround
-" control the file explorer with vim motions
-"set nerdtree
 " display available keybindings in a popup
 set which-key
 
 
-" KEYMAPPINGS
+" KEYBINDINGS
 " =============================================================================
 " no arrow keys!
 nnoremap <Left>  :echo "Use h to move!"<cr>
@@ -83,6 +81,16 @@ nmap ]d <Action>(GotoNextError)
 map Q gq
 " show intention actions
 nmap <leader>a <Action>(ShowIntentionActions)
+" run
+nmap <leader>r <Action>(Run)
+" display modes
+nmap <leader>df <Action>(ToggleDistractionFreeMode)
+nmap <leader>dp <Action>(TogglePresentationMode)
+" files
+nmap <leader>fb <Action>(NewScratchBuffer)
+nmap <leader>ff <Action>(GotoFile)
+nmap <leader>fr <Action>(RecentFiles)
+nmap <leader>fs <Action>(NewScratchFile)
 " goto
 nmap <leader>gd <Action>(GotoDeclaration)
 nmap <leader>gi <Action>(GotoImplementation)
@@ -91,11 +99,6 @@ nmap <leader>gt <Action>(GotoTypeDeclaration)
 nmap <leader>rf <Action>(ReformatCode)
 nmap <leader>rr <Action>(RenameElement)
 nmap <leader>rs <Action>(ChangeSignature)
-" files
-nmap <leader>fb <Action>(NewScratchBuffer)
-nmap <leader>ff <Action>(GotoFile)
-nmap <leader>fr <Action>(RecentFiles)
-nmap <leader>fs <Action>(NewScratchFile)
 " ideavim
 nmap <leader>R <Action>(IdeaVim.ReloadVimRc.reload)
 
@@ -109,8 +112,13 @@ let g:WhichKey_SortCaseSensitive = "false"
 let g:WhichKeyDesc_Goto_GotoPreviousDiagnostic = "[d Goto: Previous [D]iagnostic Message"
 let g:WhichKeyDesc_Goto_GotoNextDiagnostic = "]d Goto: Next [D]iagnostic Message"
 " leader / root
-let g:WhichKeyDesc_refactoring_ShowIntentionActions = "<leader>a Show Intention [A]ctions"
-let g:WhichKeyDesc_ideavim_reload = "<leader>R [R]eload .ideavimrc"
+let g:WhichKeyDesc_ShowIntentionActions = "<leader>a Show Intention [A]ctions"
+let g:WhichKeyDesc_Run = "<leader>r [R]un"
+let g:WhichKeyDesc_Reload = "<leader>R [R]eload .ideavimrc"
+" leader / display modes
+let g:WhichKeyDesc_Display = "<leader>d [D]isplay"
+let g:WhichKeyDesc_Display_DistractionFreeMode = "<leader>df [D]isplay: Distraction [F]ree Mode"
+let g:WhichKeyDesc_Display_PresentationMode = "<leader>dp [D]isplay: [P]resentation Mode"
 " leader / files
 let g:WhichKeyDesc_Files = "<leader>f [F]iles"
 let g:WhichKeyDesc_Files_NewScratchBuffer = "<leader>fb [F]iles: New Scratch [B]uffer"
