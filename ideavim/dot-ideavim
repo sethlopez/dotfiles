@@ -76,7 +76,7 @@ nmap <C-w>m <Action>(MoveEditorToOppositeSplit)
 nmap <C-w>M <Action>(MaximizeEditorInSplit)
 nmap <C-w>O <Action>(ChangeSplitOrientation)
 nmap <C-w>u <Action>(Unsplit)
-" use ]e and [e to navigate errors
+" use ]d and [d to navigate diagnostic messages
 nmap [d <Action>(GotoPreviousError)
 nmap ]d <Action>(GotoNextError)
 " don't use Ex mode, use Q for formatting.
@@ -106,8 +106,8 @@ nmap <leader>R <Action>(IdeaVim.ReloadVimRc.reload)
 let g:WhichKey_FontSize = 16
 let g:WhichKey_SortCaseSensitive = "false"
 " diagnostics
-let g:WhichKeyDesc_Goto_GotoPreviousDiagnostic = "[d Goto: Previous [D]iagnostic"
-let g:WhichKeyDesc_Goto_GotoNextDiagnostic = "]d Goto: Next [D]iagnostic"
+let g:WhichKeyDesc_Goto_GotoPreviousDiagnostic = "[d Goto: Previous [D]iagnostic Message"
+let g:WhichKeyDesc_Goto_GotoNextDiagnostic = "]d Goto: Next [D]iagnostic Message"
 " leader / root
 let g:WhichKeyDesc_refactoring_ShowIntentionActions = "<leader>a Show Intention [A]ctions"
 let g:WhichKeyDesc_ideavim_reload = "<leader>R [R]eload .ideavimrc"
