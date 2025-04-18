@@ -54,25 +54,31 @@ set which-key
 
 " KEYMAPPINGS
 " =============================================================================
-" don't use Ex mode, use Q for formatting.
-map Q gq
+" no arrow keys!
+nnoremap <Left>  :echo "Use h to move!"<cr>
+nnoremap <Down>  :echo "Use j to move!"<cr>
+nnoremap <Up>    :echo "Use k to move!"<cr>
+nnoremap <Right> :echo "Use l to move!"<cr>
+
 " vertically center the scrolled line on screen when half-paging up/down
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
+
 " enable hlsearch when searching
 nnoremap / :set hlsearch<cr>/
 nnoremap ? :set hlsearch<cr>?
+" escape clears hlsearch in normal
+nnoremap <Esc> :set nohlsearch<cr>
+
 " use ]e and [e to navigate errors
 nmap [e <Action>(GotoPreviousError)
 nmap ]e <Action>(GotoNextError)
 
+" don't use Ex mode, use Q for formatting.
+map Q gq
 
 " LEADER KEYMAPPINGS
 " =============================================================================
-" toggle hlsearch
-nnoremap <leader>h :set invhlsearch<cr>
-let g:WhichKeyDesc_invhlsearch = "<leader>h toggle hlsearch"
-
 let g:WhichKeyDesc_git = "<leader>g git"
 " annotate lines with git blame
 nmap <leader>ga <Action>(Annotate)
