@@ -34,8 +34,8 @@ set ideajoin
 set ideaput
 " use the IDE's bookmarks rather than vim's marks
 set ideamarks
-" set a longer timeout for motions; for which-key
-set timeoutlen=5000
+" remove timeout; for which-key
+set notimeout
 
 
 " ENABLE PLUGINS
