@@ -83,6 +83,8 @@ map Q gq
 nmap <leader>a <Action>(ShowIntentionActions)
 " run
 nmap <leader>r <Action>(Run)
+" sync project
+nmap <leader>S <Action>(Android.SyncProject)
 " display modes
 nmap <leader>df <Action>(ToggleDistractionFreeMode)
 nmap <leader>dp <Action>(TogglePresentationMode)
@@ -115,6 +117,7 @@ let g:WhichKeyDesc_Goto_GotoNextDiagnostic = "]d Goto: Next [D]iagnostic Message
 let g:WhichKeyDesc_ShowIntentionActions = "<leader>a Show Intention [A]ctions"
 let g:WhichKeyDesc_Run = "<leader>r [R]un"
 let g:WhichKeyDesc_Reload = "<leader>R [R]eload .ideavimrc"
+let g:WhichKeyDesc_SyncProject = "<leader>S [S]ync Project"
 " leader / display modes
 let g:WhichKeyDesc_Display = "<leader>d [D]isplay"
 let g:WhichKeyDesc_Display_DistractionFreeMode = "<leader>df [D]isplay: Distraction [F]ree Mode"
