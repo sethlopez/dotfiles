@@ -70,7 +70,7 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
-nmap <C-w>m <Action>(MoveEditorToOppositeSplit)
+nmap <C-w>m <Action>(MoveEditorToOppositeTabGroup)
 nmap <C-w>M <Action>(MaximizeEditorInSplit)
 nmap <C-w>O <Action>(ChangeSplitOrientation)
 nmap <C-w>u <Action>(Unsplit)
