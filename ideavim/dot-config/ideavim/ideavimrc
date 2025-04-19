@@ -79,12 +79,12 @@ nmap [d <Action>(GotoPreviousError)
 nmap ]d <Action>(GotoNextError)
 " don't use Ex mode, use Q for formatting.
 map Q gq
+
 " show intention actions
 nmap <leader>a <Action>(ShowIntentionActions)
-" run
-nmap <leader>r <Action>(Run)
-" sync project
-nmap <leader>S <Action>(Android.SyncProject)
+" easier yanking of the whole file
+nnoremap <leader>y :%y<cr>
+nnoremap <leader>Y :%y+<cr>
 " display modes
 nmap <leader>df <Action>(ToggleDistractionFreeMode)
 nmap <leader>dp <Action>(TogglePresentationMode)
@@ -97,6 +97,9 @@ nmap <leader>fs <Action>(NewScratchFile)
 nmap <leader>gd <Action>(GotoDeclaration)
 nmap <leader>gi <Action>(GotoImplementation)
 nmap <leader>gt <Action>(GotoTypeDeclaration)
+" project
+nmap <leader>pr <Action>(Run)
+nmap <leader>ps <Action>(Android.SyncProject)
 " refactor
 nmap <leader>rf <Action>(ReformatCode)
 nmap <leader>rr <Action>(RenameElement)
@@ -111,29 +114,30 @@ nmap <leader>R <Action>(IdeaVim.ReloadVimRc.reload)
 let g:WhichKey_FontSize = 16
 let g:WhichKey_SortCaseSensitive = "false"
 " diagnostics
-let g:WhichKeyDesc_Goto_GotoPreviousDiagnostic = "[d Goto: Previous [D]iagnostic Message"
-let g:WhichKeyDesc_Goto_GotoNextDiagnostic = "]d Goto: Next [D]iagnostic Message"
+let g:WhichKeyDesc_Goto_GotoPreviousDiagnostic = "[d  Goto: Previous [D]iagnostic Message"
+let g:WhichKeyDesc_Goto_GotoNextDiagnostic =     "]d  Goto: Next [D]iagnostic Message"
 " leader / root
-let g:WhichKeyDesc_ShowIntentionActions = "<leader>a Show Intention [A]ctions"
-let g:WhichKeyDesc_Run = "<leader>r [R]un"
-let g:WhichKeyDesc_Reload = "<leader>R [R]eload .ideavimrc"
-let g:WhichKeyDesc_SyncProject = "<leader>S [S]ync Project"
+let g:WhichKeyDesc_ShowIntentionActions =        "<leader>a  Show Intention [A]ctions"
+let g:WhichKeyDesc_Reload =                      "<leader>R  [R]eload .ideavimrc"
 " leader / display modes
-let g:WhichKeyDesc_Display = "<leader>d [D]isplay"
+let g:WhichKeyDesc_Display =                     "<leader>d  [D]isplay"
 let g:WhichKeyDesc_Display_DistractionFreeMode = "<leader>df [D]isplay: Distraction [F]ree Mode"
-let g:WhichKeyDesc_Display_PresentationMode = "<leader>dp [D]isplay: [P]resentation Mode"
+let g:WhichKeyDesc_Display_PresentationMode =    "<leader>dp [D]isplay: [P]resentation Mode"
 " leader / files
-let g:WhichKeyDesc_Files = "<leader>f [F]iles"
-let g:WhichKeyDesc_Files_NewScratchBuffer = "<leader>fb [F]iles: New Scratch [B]uffer"
-let g:WhichKeyDesc_Files_GotoFile = "<leader>ff [F]iles: Goto [F]ile"
-let g:WhichKeyDesc_Files_RecentFiles = "<leader>fr [F]iles: Goto [R]ecent File"
-let g:WhichKeyDesc_Files_NewScratchFile = "<leader>fs [F]iles: New [S]cratch File"
+let g:WhichKeyDesc_Files =                       "<leader>f  [F]iles"
+let g:WhichKeyDesc_Files_NewScratchBuffer =      "<leader>fb [F]iles: New Scratch [B]uffer"
+let g:WhichKeyDesc_Files_GotoFile =              "<leader>ff [F]iles: Goto [F]ile"
+let g:WhichKeyDesc_Files_RecentFiles =           "<leader>fr [F]iles: Goto [R]ecent File"
+let g:WhichKeyDesc_Files_NewScratchFile =        "<leader>fs [F]iles: New [S]cratch File"
 " leader / goto
-let g:WhichKeyDesc_Goto = "<leader>g [G]oto"
-let g:WhichKeyDesc_Goto_GotoDeclaration = "<leader>gd [G]oto: [D]eclaration"
-let g:WhichKeyDesc_Goto_GotoImplementation = "<leader>gi [G]oto: [I]mplementation"
-let g:WhichKeyDesc_Goto_GotoTypeDeclaration = "<leader>gt [G]oto: [T]ype Declaration"
+let g:WhichKeyDesc_Goto =                        "<leader>g  [G]oto"
+let g:WhichKeyDesc_Goto_GotoDeclaration =        "<leader>gd [G]oto: [D]eclaration"
+let g:WhichKeyDesc_Goto_GotoImplementation =     "<leader>gi [G]oto: [I]mplementation"
+let g:WhichKeyDesc_Goto_GotoTypeDeclaration =    "<leader>gt [G]oto: [T]ype Declaration"
+" leader / project
+let g:WhichKeyDesc_Project_Run =                 "<leader>pr [P]roject: [R]un"
+let g:WhichKeyDesc_Project_Sync =                "<leader>ps [P]roject: [S]ync"
 " leader / refactor
-let g:WhichKeyDesc_Refactor_ReformatCode = "<leader>rf [R]efactor: Re[f]ormat"
-let g:WhichKeyDesc_Refactor_RenameElement = "<leader>rr [R]efactor: [R]ename"
-let g:WhichKeyDesc_Refactor_ChangeSignature = "<leader>rs [R]efactor: Change [S]ignature"
+let g:WhichKeyDesc_Refactor_ReformatCode =       "<leader>rf [R]efactor: Re[f]ormat"
+let g:WhichKeyDesc_Refactor_RenameElement =      "<leader>rr [R]efactor: [R]ename"
+let g:WhichKeyDesc_Refactor_ChangeSignature =    "<leader>rs [R]efactor: Change [S]ignature"
