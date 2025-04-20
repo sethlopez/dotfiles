@@ -10,6 +10,7 @@ brew 'shellcheck'
 brew 'sqlite'
 brew 'stow'
 brew 'tree'
+brew 'zellij'
 
 cask '1password'
 cask 'alacritty'
