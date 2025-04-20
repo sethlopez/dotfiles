@@ -52,66 +52,75 @@ set which-key
 
 " KEYBINDINGS
 " =============================================================================
+" don't use Ex mode, use Q for formatting.
+map Q gq
 " no arrow keys!
-nnoremap <Left>  :echo "Use h to move!"<cr>
-nnoremap <Down>  :echo "Use j to move!"<cr>
-nnoremap <Up>    :echo "Use k to move!"<cr>
-nnoremap <Right> :echo "Use l to move!"<cr>
+nnoremap <Left>  :echo "Use h to move!"<CR>
+nnoremap <Down>  :echo "Use j to move!"<CR>
+nnoremap <Up>    :echo "Use k to move!"<CR>
+nnoremap <Right> :echo "Use l to move!"<CR>
 " vertically center the scrolled line on screen when half-paging up/down
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
 " enable hlsearch when searching
-nnoremap / :set hlsearch<cr>/
-nnoremap ? :set hlsearch<cr>?
+nnoremap / :set hlsearch<CR>/
+nnoremap ? :set hlsearch<CR>?
 " escape clears hlsearch in normal mode
-nnoremap <Esc> :set nohlsearch<cr>
+nnoremap <Esc> :set nohlsearch<CR>
 " split navigation
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-nmap <C-w>m <Action>(MoveEditorToOppositeTabGroup)
-nmap <C-w>M <Action>(MaximizeEditorInSplit)
-nmap <C-w>O <Action>(ChangeSplitOrientation)
-nmap <C-w>u <Action>(Unsplit)
+nnoremap <C-h>  <C-w>h
+nnoremap <C-j>  <C-w>j
+nnoremap <C-k>  <C-w>k
+nnoremap <C-l>  <C-w>l
+nnoremap <C-w>m :action MoveEditorToOppositeTabGroup<CR>
+nnoremap <C-w>M :action MaximizeEditorInSplit<CR>
+nnoremap <C-w>O :action ChangeSplitOrientation<CR>
+nnoremap <C-w>u :action Unsplit<CR>
 " use ]d and [d to navigate diagnostic messages
-nmap [d <Action>(GotoPreviousError)
-nmap ]d <Action>(GotoNextError)
-" don't use Ex mode, use Q for formatting.
-map Q gq
+nnoremap [d :action GotoPreviousError<CR>
+nnoremap ]d :action GotoNextError<CR>
 
-" show intention actions
-nmap <leader>a <Action>(ShowIntentionActions)
 " easier yanking of the whole file
-nnoremap <leader>y :%y<cr>
-nnoremap <leader>Y :%y+<cr>
+nnoremap <leader>y   :%y<CR>
+nnoremap <leader>Y   :%y+<CR>
 " display modes
-nmap <leader>df <Action>(ToggleDistractionFreeMode)
-nmap <leader>dp <Action>(TogglePresentationMode)
+nnoremap <leader>df  :action ToggleDistractionFreeMode<CR>
+nnoremap <leader>dp  :action TogglePresentationMode<CR>
 " files
-nmap <leader>fb <Action>(NewScratchBuffer)
-nmap <leader>ff <Action>(GotoFile)
-nmap <leader>fr <Action>(RecentFiles)
-nmap <leader>fs <Action>(NewScratchFile)
+nnoremap <leader>fb  :action NewScratchBuffer<CR>
+nnoremap <leader>ff  :action GotoFile<CR>
+nnoremap <leader>fr  :action RecentFiles<CR>
+nnoremap <leader>fs  :action NewScratchFile<CR>
 " goto
-nmap <leader>gd <Action>(GotoDeclaration)
-nmap <leader>gi <Action>(GotoImplementation)
-nmap <leader>gt <Action>(GotoTypeDeclaration)
+nnoremap <leader>gd  :action GotoDeclaration<CR>
+nnoremap <leader>gi  :action GotoImplementation<CR>
+nnoremap <leader>gt  :action GotoTest<CR>
+nnoremap <leader>gy  :action GotoTypeDeclaration<CR>
 " project
-nmap <leader>pr <Action>(Run)
-nmap <leader>ps <Action>(Android.SyncProject)
+nnoremap <leader>pr  :action Run<CR>
+nnoremap <leader>ps  :action Android.SyncProject<CR>
+" show popups
+nnoremap <leader>sa  :action ShowIntentionActions<CR>
+nnoremap <leader>sh  :action ShowHoverInfo<CR>
+nnoremap <leader>si  :action QuickImplementations<CR>
+nnoremap <leader>sl  :action RecentLocations<CR>
+nnoremap <leader>ss  :action FileStructurePopup<CR>
+nnoremap <leader>st  :action QuickTypeDefinition<CR>
+nnoremap <leader>su  :action ShowUsages<CR>
 " refactor
-nmap <leader>rf <Action>(ReformatCode)
-nmap <leader>rr <Action>(RenameElement)
-nmap <leader>rs <Action>(ChangeSignature)
+nnoremap <leader>rf  :action ReformatCode<CR>
+nnoremap <leader>rr  :action RenameElement<CR>
+nnoremap <leader>rs  :action ChangeSignature<CR>
 " ideavim
-nmap <leader>R <Action>(IdeaVim.ReloadVimRc.reload)
+nnoremap <leader>R   :action IdeaVim.ReloadVimRc.reload<CR>
 
 
 " WHICH-KEY
 " =============================================================================
 " settings
+let g:WhichKey_DefaultDelay = 0
 let g:WhichKey_FontSize = 16
+let g:WhichKey_ProcessUnknownMappings = "false"
 let g:WhichKey_SortCaseSensitive = "false"
 " diagnostics
 let g:WhichKeyDesc_Goto_GotoPreviousDiagnostic = "[d   Goto: Previous [D]iagnostic Message"
@@ -126,8 +135,9 @@ let g:WhichKeyDesc_Window_MaximizeSplit =        "<C-w>M   Maximize split"
 let g:WhichKeyDesc_Window_ChangeOrientation =    "<C-w>O   Change split orientation"
 let g:WhichKeyDesc_Window_Unsplit =              "<C-w>u   Unsplit (Merge)"
 " leader / root
-let g:WhichKeyDesc_ShowIntentionActions =        "<leader>a   Show Intention [A]ctions"
 let g:WhichKeyDesc_Reload =                      "<leader>R   [R]eload .ideavimrc"
+let g:WhichKeyDesc_YankBuffer =                  "<leader>y   [Y]ank Buffer"
+let g:WhichKeyDesc_YankBufferToClipboard =       "<leader>Y   [Y]ank Buffer To Clipboard"
 " leader / display modes
 let g:WhichKeyDesc_Display =                     "<leader>d   [D]isplay"
 let g:WhichKeyDesc_Display_DistractionFreeMode = "<leader>df  [D]isplay: Distraction [F]ree Mode"
@@ -142,11 +152,23 @@ let g:WhichKeyDesc_Files_NewScratchFile =        "<leader>fs  [F]iles: New [S]cr
 let g:WhichKeyDesc_Goto =                        "<leader>g   [G]oto"
 let g:WhichKeyDesc_Goto_GotoDeclaration =        "<leader>gd  [G]oto: [D]eclaration"
 let g:WhichKeyDesc_Goto_GotoImplementation =     "<leader>gi  [G]oto: [I]mplementation"
-let g:WhichKeyDesc_Goto_GotoTypeDeclaration =    "<leader>gt  [G]oto: [T]ype Declaration"
+let g:WhichKeyDesc_Goto_GotoTypeDeclaration =    "<leader>gt  [G]oto: T[y]pe Declaration"
+let g:WhichKeyDesc_Goto_Test =                   "<leader>gT  [G]oto: [T]est"
 " leader / project
+let g:WhichKeyDesc_Project =                     "<leader>p   [P]roject"
 let g:WhichKeyDesc_Project_Run =                 "<leader>pr  [P]roject: [R]un"
 let g:WhichKeyDesc_Project_Sync =                "<leader>ps  [P]roject: [S]ync"
 " leader / refactor
+let g:WhichKeyDesc_Refactor =                    "<leader>r   [R]efactor"
 let g:WhichKeyDesc_Refactor_ReformatCode =       "<leader>rf  [R]efactor: Re[f]ormat"
 let g:WhichKeyDesc_Refactor_RenameElement =      "<leader>rr  [R]efactor: [R]ename"
 let g:WhichKeyDesc_Refactor_ChangeSignature =    "<leader>rs  [R]efactor: Change [S]ignature"
+" leader / show popups
+let g:WhichKeyDesc_Show =                        "<leader>s   [S]how"
+let g:WhichKeyDesc_Show_IntentionActions =       "<leader>sa  [S]how: Intention [A]ctions"
+let g:WhichKeyDesc_Show_HoverInfo =              "<leader>sh  [S]how: [H]over Info"
+let g:WhichKeyDesc_Show_Implementations =        "<leader>si  [S]how: [I]mplementations"
+let g:WhichKeyDesc_Show_RecentLocations =        "<leader>sl  [S]how: Recent [L]ocations"
+let g:WhichKeyDesc_Show_FileStructure =          "<leader>ss  [S]how: File [S]tructure"
+let g:WhichKeyDesc_Show_TypeDefinition =         "<leader>st  [S]how: [T]ype Definition"
+let g:WhichKeyDesc_Show_Usages =                 "<leader>su  [S]how: [U]sages"
