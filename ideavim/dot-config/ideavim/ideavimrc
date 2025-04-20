@@ -150,10 +150,10 @@ let g:WhichKeyDesc_Files_RecentFiles =           "<leader>fr  [F]iles: Goto [R]e
 let g:WhichKeyDesc_Files_NewScratchFile =        "<leader>fs  [F]iles: New [S]cratch File"
 " leader / goto
 let g:WhichKeyDesc_Goto =                        "<leader>g   [G]oto"
-let g:WhichKeyDesc_Goto_GotoDeclaration =        "<leader>gd  [G]oto: [D]eclaration"
-let g:WhichKeyDesc_Goto_GotoImplementation =     "<leader>gi  [G]oto: [I]mplementation"
-let g:WhichKeyDesc_Goto_GotoTypeDeclaration =    "<leader>gt  [G]oto: T[y]pe Declaration"
+let g:WhichKeyDesc_Goto_Declaration =        "<leader>gd  [G]oto: [D]eclaration"
+let g:WhichKeyDesc_Goto_Implementation =     "<leader>gi  [G]oto: [I]mplementation"
 let g:WhichKeyDesc_Goto_Test =                   "<leader>gT  [G]oto: [T]est"
+let g:WhichKeyDesc_Goto_TypeDeclaration =    "<leader>gt  [G]oto: T[y]pe Declaration"
 " leader / project
 let g:WhichKeyDesc_Project =                     "<leader>p   [P]roject"
 let g:WhichKeyDesc_Project_Run =                 "<leader>pr  [P]roject: [R]un"
