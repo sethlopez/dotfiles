@@ -94,6 +94,8 @@ nnoremap <leader>fs  :action NewScratchFile<CR>
 " goto
 nnoremap <leader>gd  :action GotoDeclaration<CR>
 nnoremap <leader>gi  :action GotoImplementation<CR>
+nnoremap <leader>gl  :action RecentLocations<CR>
+nnoremap <leader>gs  :action FileStructurePopup<CR>
 nnoremap <leader>gt  :action GotoTest<CR>
 nnoremap <leader>gy  :action GotoTypeDeclaration<CR>
 " project
@@ -103,8 +105,6 @@ nnoremap <leader>ps  :action Android.SyncProject<CR>
 nnoremap <leader>sa  :action ShowIntentionActions<CR>
 nnoremap <leader>sh  :action ShowHoverInfo<CR>
 nnoremap <leader>si  :action QuickImplementations<CR>
-nnoremap <leader>sl  :action RecentLocations<CR>
-nnoremap <leader>ss  :action FileStructurePopup<CR>
 nnoremap <leader>st  :action QuickTypeDefinition<CR>
 nnoremap <leader>su  :action ShowUsages<CR>
 " refactor
@@ -150,10 +150,12 @@ let g:WhichKeyDesc_Files_RecentFiles =           "<leader>fr  [F]iles: Goto [R]e
 let g:WhichKeyDesc_Files_NewScratchFile =        "<leader>fs  [F]iles: New [S]cratch File"
 " leader / goto
 let g:WhichKeyDesc_Goto =                        "<leader>g   [G]oto"
-let g:WhichKeyDesc_Goto_Declaration =        "<leader>gd  [G]oto: [D]eclaration"
-let g:WhichKeyDesc_Goto_Implementation =     "<leader>gi  [G]oto: [I]mplementation"
+let g:WhichKeyDesc_Goto_Declaration =            "<leader>gd  [G]oto: [D]eclaration"
+let g:WhichKeyDesc_Goto_Implementation =         "<leader>gi  [G]oto: [I]mplementation"
+let g:WhichKeyDesc_Show_RecentLocations =        "<leader>gl  [G]oto: Recent [L]ocations"
+let g:WhichKeyDesc_Show_FileStructure =          "<leader>gs  [G]oto: File [S]tructure"
 let g:WhichKeyDesc_Goto_Test =                   "<leader>gT  [G]oto: [T]est"
-let g:WhichKeyDesc_Goto_TypeDeclaration =    "<leader>gt  [G]oto: T[y]pe Declaration"
+let g:WhichKeyDesc_Goto_TypeDeclaration =        "<leader>gt  [G]oto: T[y]pe Declaration"
 " leader / project
 let g:WhichKeyDesc_Project =                     "<leader>p   [P]roject"
 let g:WhichKeyDesc_Project_Run =                 "<leader>pr  [P]roject: [R]un"
@@ -168,7 +170,5 @@ let g:WhichKeyDesc_Show =                        "<leader>s   [S]how"
 let g:WhichKeyDesc_Show_IntentionActions =       "<leader>sa  [S]how: Intention [A]ctions"
 let g:WhichKeyDesc_Show_HoverInfo =              "<leader>sh  [S]how: [H]over Info"
 let g:WhichKeyDesc_Show_Implementations =        "<leader>si  [S]how: [I]mplementations"
-let g:WhichKeyDesc_Show_RecentLocations =        "<leader>sl  [S]how: Recent [L]ocations"
-let g:WhichKeyDesc_Show_FileStructure =          "<leader>ss  [S]how: File [S]tructure"
 let g:WhichKeyDesc_Show_TypeDefinition =         "<leader>st  [S]how: [T]ype Definition"
 let g:WhichKeyDesc_Show_Usages =                 "<leader>su  [S]how: [U]sages"
