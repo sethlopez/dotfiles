@@ -93,9 +93,10 @@ nnoremap <leader>fr  :action RecentFiles<CR>
 nnoremap <leader>fs  :action NewScratchFile<CR>
 " goto
 nnoremap <leader>gd  :action GotoDeclaration<CR>
+nnoremap <leader>gg  :action FileStructurePopup<CR>
 nnoremap <leader>gi  :action GotoImplementation<CR>
 nnoremap <leader>gl  :action RecentLocations<CR>
-nnoremap <leader>gs  :action FileStructurePopup<CR>
+nnoremap <leader>gs  :action GotoSuperMethod<CR>
 nnoremap <leader>gt  :action GotoTest<CR>
 nnoremap <leader>gy  :action GotoTypeDeclaration<CR>
 " project
@@ -151,11 +152,12 @@ let g:WhichKeyDesc_Files_NewScratchFile =        "<leader>fs  [F]iles: New [S]cr
 " leader / goto
 let g:WhichKeyDesc_Goto =                        "<leader>g   [G]oto"
 let g:WhichKeyDesc_Goto_Declaration =            "<leader>gd  [G]oto: [D]eclaration"
+let g:WhichKeyDesc_Goto_FileStructure =          "<leader>gg  [G]oto: File Structure"
 let g:WhichKeyDesc_Goto_Implementation =         "<leader>gi  [G]oto: [I]mplementation"
-let g:WhichKeyDesc_Show_RecentLocations =        "<leader>gl  [G]oto: Recent [L]ocations"
-let g:WhichKeyDesc_Show_FileStructure =          "<leader>gs  [G]oto: File [S]tructure"
-let g:WhichKeyDesc_Goto_Test =                   "<leader>gT  [G]oto: [T]est"
-let g:WhichKeyDesc_Goto_TypeDeclaration =        "<leader>gt  [G]oto: T[y]pe Declaration"
+let g:WhichKeyDesc_Goto_RecentLocations =        "<leader>gl  [G]oto: Recent [L]ocations"
+let g:WhichKeyDesc_Goto_SuperMethod =            "<leader>gs  [G]oto: [S]uper Method"
+let g:WhichKeyDesc_Goto_Test =                   "<leader>gt  [G]oto: [T]est"
+let g:WhichKeyDesc_Goto_TypeDeclaration =        "<leader>gy  [G]oto: T[y]pe Declaration"
 " leader / project
 let g:WhichKeyDesc_Project =                     "<leader>p   [P]roject"
 let g:WhichKeyDesc_Project_Run =                 "<leader>pr  [P]roject: [R]un"
