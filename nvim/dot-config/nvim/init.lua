@@ -75,9 +75,6 @@ vim.opt.scrolloff = 10
 -- See `:help 'confirm'`
 vim.opt.confirm = true
 
--- enable digraph motion: {char1} <BS> {char2}
-vim.opt.digraph = true
-
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
