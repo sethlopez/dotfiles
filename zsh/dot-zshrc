@@ -95,6 +95,9 @@ source "$HOME/.aliases"
 test -e "$HOME/.private/exports" && source "$HOME/.private/exports"
 test -e "$HOME/.private/aliases" && source "$HOME/.private/aliases"
 
+# load fzf integration
+command -v "fzf" > /dev/null 2>&1 && source <(fzf --zsh)
+
 #==============================================================================#
 # prompt                                                                       #
 #==============================================================================#

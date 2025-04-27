@@ -12,6 +12,51 @@ export PATH=$PATH:$ANDROID_HOME/tools/bin
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH=$PATH:$ANDROID_HOME/emulator
 
+#-- fzf ------------------------------------------------------------------------
+
+export FZF_CTRL_T_OPTS="
+  --style minimal
+  --header 'CTRL-Y: Yank | CTRL-P: Preview'
+  --header-first
+  --color header:italic
+  --preview-window 'border-left,hidden'
+  --bind 'ctrl-p:toggle-preview'
+  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'"
+
+if command -v "bat" > /dev/null 2>&1; then
+    export FZF_CTRL_T_OPTS="
+      $FZF_CTRL_T_OPTS
+      --preview 'bat -n --color=always {}'"
+fi
+
+export FZF_CTRL_R_OPTS="
+  --header 'CTRL-Y: Yank | CTRL-P: Preview'
+  --header-first
+  --color header:italic
+  --layout reverse
+  --preview 'echo {}'
+  --preview-window 'border-left,wrap,hidden'
+  --bind 'ctrl-p:toggle-preview'
+  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'"
+
+export FZF_ALT_C_OPTS="
+  --style minimal
+  --header 'CTRL-P: Preview'
+  --header-first
+  --color header:italic
+  --preview-window 'border-left,hidden'
+  --bind 'ctrl-p:toggle-preview'"
+
+if command -v "tree" > /dev/null 2>&1; then
+    export FZF_ALT_C_OPTS="
+      $FZF_ALT_C_OPTS
+      --preview 'tree -aC -L 2 --gitignore --filesfirst {}'"
+fi
+
+if command -v "rg" > /dev/null 2>&1; then
+    export FZF_DEFAULT_COMMAND="rg --hidden --follow --files --nomessages"
+fi
+
 #-- Miscellaneous --------------------------------------------------------------
 
 if command -v "nvim" > /dev/null 2>&1; then
