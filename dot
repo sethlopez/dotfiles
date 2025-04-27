@@ -21,7 +21,7 @@ if [ $# -gt 0 ]; then
         upgrade)
             source "uninstall.sh"
             source "download.sh"
-            source "install.sh"
+            echo "Run 'dot install' to finish upgrade."
             ;;
         uninstall)
             source "uninstall.sh"
