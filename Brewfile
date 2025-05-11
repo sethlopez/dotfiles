@@ -1,4 +1,5 @@
 brew 'bat'
+brew 'fd'
 brew 'ffmpeg'
 brew 'fzf'
 brew 'jq'
