@@ -112,40 +112,40 @@ function _precmd_git_commit() {
     test -n "$commit" && printf "%s" "%F{yellow}$commit%f"
 }
 
-function _precmd_git_untracked() {
-    test -n "$(git ls-files --others --exclude-standard --directory --no-empty-directory)" && printf "%s" "%F{red}?%f"
-}
+function _precmd_git_status() {
+    local porcelain="$(git status --porcelain --untracked-files=normal 2>/dev/null)"
+    test -z "$porcelain" && return
 
-function _precmd_git_unstaged() {
-    test -n "$(git ls-files --modified --exclude-standard)" && printf "%s" "%F{red}*%f"
-}
-
-function _precmd_git_uncommitted() {
-    # this will exit with a code of 1 if there are uncommitted changes
-    git diff --cached --quiet --exit-code || printf "%s" "%F{red}!%f"
+    local result
+    echo "$porcelain" | grep -q '^??'      && result="$result%F{red}?%f"
+    echo "$porcelain" | grep -q '^[MADRC]' && result="$result%F{red}!%f"
+    echo "$porcelain" | grep -q '^.[MD]'   && result="$result%F{red}*%f"
+    printf "%s" "$result"
 }
 
 function _precmd_git_info() {
-    if git rev-parse 2>/dev/null; then
-        local separator="%F{yellow}@%f"
-        local git_branch=$(_precmd_git_branch)
-        local git_commit=$(_precmd_git_commit)
-        local git_info
-        if test -n "$git_branch" && test -n "$git_commit"; then
-            git_info="$git_branch$separator$git_commit"
-        else
-            git_info="$git_branch$git_commit"
-        fi
+    local in_work_tree
+    in_work_tree=$(git rev-parse --is-inside-work-tree 2>/dev/null)
 
-        local git_status
-        git_status="$git_status$(_precmd_git_untracked)"
-        git_status="$git_status$(_precmd_git_unstaged)"
-        git_status="$git_status$(_precmd_git_uncommitted)"
-        test -n "$git_status" && git_status="%F{yellow}[%f$git_status%F{yellow}]%f"
+    # bare .git dir (e.g. top-level of a .bare work tree directory) or not a repo
+    test -z "$in_work_tree" && return
 
-        local prefix="%F{yellow}git:%f"
-        printf "%s" "$prefix$git_info$git_status"
+    local separator="%F{yellow}@%f"
+    local git_branch=$(_precmd_git_branch)
+    local git_commit=$(_precmd_git_commit)
+    local git_info
+    if test -n "$git_branch" && test -n "$git_commit"; then
+        git_info="$git_branch$separator$git_commit"
+    else
+        git_info="$git_branch$git_commit"
     fi
+
+    local git_status
+    test "$in_work_tree" = "true" && git_status="$(_precmd_git_status)"
+    test -n "$git_status" && git_status="%F{yellow}[%f$git_status%F{yellow}]%f"
+
+    local prefix="%F{yellow}git:%f"
+    printf "%s" "$prefix$git_info$git_status"
 }
 
 function precmd() {
