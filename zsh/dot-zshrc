@@ -5,16 +5,33 @@
 
 #-- Changing Directories -------------------------------------------------------
 
-# none
+# push every visited directory onto the dir stack
+setopt auto_pushd
+# don't push a directory onto the stack if it's already there
+setopt pushd_ignore_dups
 
 #-- Completion -----------------------------------------------------------------
 
 # make the completion list smaller by using columns with different widths
 setopt list_packed
 
+# enable arrow keys for navigating the completion menu
+zstyle ':completion:*' menu select
+# enable colored completion listings
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+# group completions by type with headers
+zstyle ':completion:*' group-name ''
+# show completion descriptions
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+# cache completion results
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$HOME/.zsh_cache"
+
 #-- Expansion and Globbing -----------------------------------------------------
 
-# none
+# enable extended glob patterns
+setopt extended_glob
 
 #-- History --------------------------------------------------------------------
 
@@ -30,10 +47,17 @@ setopt inc_append_history
 setopt hist_ignore_dups
 # do not enter commands into the history if they begin with a space
 setopt hist_ignore_space
+# load recalled history into the buffer for editing instead of running it
+setopt hist_verify
+# allow comments on the command line (useful for history)
+setopt interactive_comments
 
 #-- Initialization -------------------------------------------------------------
 
-# none
+# add completions installed via brew to the fpath
+if command -v brew > /dev/null 2>&1; then
+    fpath=("$(brew --prefix)/share/zsh/site-functions" $fpath)
+fi
 
 #-- Input / Output -------------------------------------------------------------
 
@@ -49,7 +73,7 @@ setopt prompt_subst
 
 #-- Scripts and Functions ------------------------------------------------------
 
-# none
+autoload -Uz zmv
 
 #-- Shell Emulation ------------------------------------------------------------
 
@@ -63,8 +87,20 @@ setopt prompt_subst
 
 # enable vi emulation
 bindkey -v
+# reduce command mode delay after ESC
+KEYTIMEOUT=1
+# treat punctuation as word boundaries for vi motions
+WORDCHARS=''
 # rebind backward history search
 bindkey "^R" history-incremental-search-backward
+# enable buffer editing in $EDITOR
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd '^X^E' edit-command-line
+# enable run-help lookup for the command under the cursor
+autoload -Uz run-help
+unalias run-help 2> /dev/null
+bindkey -M vicmd 'K' run-help
 
 #==============================================================================#
 # miscellaneous                                                                #
@@ -73,7 +109,12 @@ bindkey "^R" history-incremental-search-backward
 #-- compinstall ----------------------------------------------------------------
 
 autoload -Uz compinit
-compinit
+# prefer completion cache and rebuild once every 24 hours
+if [[ -n "$HOME/.zcompdump"(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
 
 #-- color ----------------------------------------------------------------------
 
