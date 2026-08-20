@@ -10,7 +10,8 @@ set -euo pipefail
 TARGET="$HOME/dotfiles"
 TMP_TARGET="/tmp/dotfiles"
 REPOSITORY="https://github.com/sethlopez/dotfiles"
-TARBALL="$REPOSITORY/tarball/main"
+BRANCH="main"
+TARBALL="$REPOSITORY/tarball/$BRANCH"
 
 if [ -d "$TARGET" ]; then
     echo -e -n "$TARGET already exists. Overwrite? (y/N) "
@@ -21,12 +22,25 @@ if [ -d "$TARGET" ]; then
     fi
 fi
 
+# A clone is preferred: 'dot upgrade' pulls, and changes made here can be
+# committed. The tarball is the fallback for a machine without git, and
+# 'dot upgrade' converts that tree into a checkout later.
+if command -v "git" > /dev/null 2>&1; then
+    echo "Cloning dotfiles..."
+    test -d "$TARGET" && rm -rf "$TARGET"
+    git clone --branch "$BRANCH" "$REPOSITORY" "$TARGET"
+    echo "Done. Dotfiles located at $TARGET."
+    exit 0
+fi
+
 if ! command -v "curl" > /dev/null 2>&1; then
-    echo "Error: Unable to download dotfiles. Missing 'curl' command." >&2
+    echo "Error: Unable to download dotfiles. Missing 'git' and 'curl' commands." >&2
     exit 1
 fi
 
 echo "Downloading dotfiles..."
+echo "Warning: 'git' not found, downloading a tarball instead. Run 'dot upgrade' once git is available to convert it into a checkout." >&2
+rm -rf "$TMP_TARGET"
 mkdir -p "$TMP_TARGET"
 curl -fsSL "$TARBALL" | tar -xz -C "$TMP_TARGET" --strip-components=1
 test -d "$TARGET" && rm -rf "$TARGET"

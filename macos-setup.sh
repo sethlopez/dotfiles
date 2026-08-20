@@ -10,6 +10,9 @@
 ##   - https://mths.be/macos
 ###
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+
 FONT_RESET="\033[0m"
 FONT_BOLD="\033[1m"
 FONT_RED="\033[31m"
@@ -538,7 +541,7 @@ if command -v brew > /dev/null 2>&1; then
     # install if the user replied y/Y or accepted the default (empty response)
     if [[ $BREWFILE_REPLY == [yY]* ]]; then
         echo "Installing/Upgrading applications in Brewfile via Homebrew..."
-        brew bundle --file="./Brewfile"
+        brew bundle --file="${SCRIPT_DIR}/Brewfile"
     fi
 fi
 

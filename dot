@@ -1,36 +1,865 @@
 #!/usr/bin/env bash
+#
+# dot - Manage local dotfiles.
+#
+# Usage: dot [OPTIONS] <command> [package]...
+#
 
-###
-## DOT
-## ---
-## Manage local dotfiles.
-###
+set -euo pipefail
+IFS=$'\n\t'
 
-DOTFILES=$(realpath "$(dirname $0)")
-cd "$DOTFILES"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_BASE="${SCRIPT_NAME%.*}"
+INVOKED_DIR="${PWD}"
+readonly SCRIPT_DIR SCRIPT_NAME SCRIPT_BASE INVOKED_DIR
 
-USAGE="Usage: dot [ install | macos-setup | upgrade | uninstall ]"
-if [ $# -gt 0 ]; then
-    case "$1" in
-        install)
-            source "install.sh"
-            ;;
-        macos-setup)
-            source "macos-setup.sh"
-            ;;
-        upgrade)
-            source "uninstall.sh"
-            source "download.sh"
-            echo "Run 'dot install' to finish upgrade."
-            ;;
-        uninstall)
-            source "uninstall.sh"
-            ;;
-        *)
-            echo "$USAGE"
+# SCRIPT_DIR is where this file was found, which is the link's directory when
+# dot is on PATH as a symlink. DOTFILES follows the link to the real checkout.
+DOT_SOURCE="${BASH_SOURCE[0]}"
+while [[ -L "${DOT_SOURCE}" ]]; do
+    DOT_LINK_DIR="$(cd "$(dirname "${DOT_SOURCE}")" && pwd)"
+    DOT_SOURCE="$(readlink "${DOT_SOURCE}")"
+    [[ "${DOT_SOURCE}" != /* ]] && DOT_SOURCE="${DOT_LINK_DIR}/${DOT_SOURCE}"
+done
+DOTFILES="$(cd "$(dirname "${DOT_SOURCE}")" && pwd)"
+readonly DOTFILES
+unset DOT_SOURCE DOT_LINK_DIR
+
+REPOSITORY="https://github.com/sethlopez/dotfiles"
+BRANCH="main"
+TARGET="${HOME}"
+readonly REPOSITORY BRANCH TARGET
+
+DRY_RUN=0
+QUIET=0
+VERBOSE=0
+FORCE=0
+LOG_LEVEL=1
+COMMAND=""
+SEEN_FLAGS=""
+ARGS=()
+PACKAGES=()
+
+# The plan covers every selected package at once, so a conflict anywhere stops
+# all of it. PLAN_LINKS, PLAN_SOURCES and PLAN_ACTIONS are parallel; an action
+# is 'ok', 'create', 'replace' or 'conflict'.
+PLAN_DIRS=()
+PLAN_LINKS=()
+PLAN_SOURCES=()
+PLAN_ACTIONS=()
+PLAN_REMOVE=()
+PLAN_CONFLICTS=()
+
+# Where to look for links left over from files that no longer exist. SCAN_ROOT
+# adds the home directory itself, for packages with a dot- file at their root.
+SCAN_DIRS=()
+SCAN_ROOT=0
+
+TARGET_PATH=""
+NORMALIZED_PATH=""
+RELATIVE_PATH=""
+LINK_OWNER=""
+PROBLEMS=0
+
+# Escape sequences, empty until log_init finds a colour terminal.
+LOG_C_DEBUG=""
+LOG_C_INFO=""
+LOG_C_WARNING=""
+LOG_C_ERROR=""
+LOG_C_RESET=""
+
+log_init() {
+    local colors
+    [[ -t 2 ]] || return 0
+    [[ -z "${NO_COLOR:-}" ]] || return 0
+    colors="$(tput colors 2>/dev/null || echo 0)"
+    [[ ${colors} -ge 8 ]] || return 0
+
+    LOG_C_RESET="$(tput sgr0 2>/dev/null || true)"
+    LOG_C_ERROR="$(tput setaf 1 2>/dev/null || true)"
+    LOG_C_WARNING="$(tput setaf 3 2>/dev/null || true)"
+    # setaf 8 is bright black only from 16 colours up. An 8-colour terminfo
+    # reads it as the start of an extended colour, so dim is the fallback.
+    if [[ ${colors} -ge 16 ]]; then
+        LOG_C_DEBUG="$(tput setaf 8 2>/dev/null || true)"
+    else
+        LOG_C_DEBUG="$(tput dim 2>/dev/null || true)"
+    fi
+
+    return 0
+}
+
+log_error() {
+    if [[ ${LOG_LEVEL} -ge 2 ]]; then
+        printf '%s[%s] ERROR: %s%s\n' "${LOG_C_ERROR}" "$(date '+%Y-%m-%d %H:%M:%S')" "$*" "${LOG_C_RESET}" >&2
+    else
+        printf '%sERROR: %s%s\n' "${LOG_C_ERROR}" "$*" "${LOG_C_RESET}" >&2
+    fi
+}
+
+log_warning() {
+    if [[ ${LOG_LEVEL} -ge 2 ]]; then
+        printf '%s[%s] WARNING: %s%s\n' "${LOG_C_WARNING}" "$(date '+%Y-%m-%d %H:%M:%S')" "$*" "${LOG_C_RESET}" >&2
+    else
+        printf '%sWARNING: %s%s\n' "${LOG_C_WARNING}" "$*" "${LOG_C_RESET}" >&2
+    fi
+}
+
+log_info() {
+    [[ ${LOG_LEVEL} -ge 1 ]] || return 0
+    if [[ ${LOG_LEVEL} -ge 2 ]]; then
+        printf '%s[%s] INFO: %s%s\n' "${LOG_C_INFO}" "$(date '+%Y-%m-%d %H:%M:%S')" "$*" "${LOG_C_RESET}" >&2
+    else
+        printf '%s%s%s\n' "${LOG_C_INFO}" "$*" "${LOG_C_RESET}" >&2
+    fi
+}
+
+log_debug() {
+    [[ ${LOG_LEVEL} -ge 2 ]] || return 0
+    printf '%s[%s] DEBUG: %s%s\n' "${LOG_C_DEBUG}" "$(date '+%Y-%m-%d %H:%M:%S')" "$*" "${LOG_C_RESET}" >&2
+}
+
+usage() {
+    cat <<'EOF'
+Usage: dot [OPTIONS] <command> [package]...
+
+Manage local dotfiles.
+
+Commands:
+  install               Symlink packages into the home directory
+  uninstall             Remove symlinked packages from the home directory
+  upgrade               Fetch the latest dotfiles and relink them
+  macos-setup           Apply macOS preferences and install the Brewfile
+  doctor                Report drift between the repository and the home
+                        directory
+
+Arguments:
+  package...            One or more package directories (default: all).
+                        Applies to 'install' and 'uninstall' only.
+
+Options:
+      --dry-run         Show actions without performing them
+  -f, --force           Discard local changes during 'upgrade'
+  -q, --quiet           Suppress progress messages
+  -v, --verbose         Enable verbose output, with timestamps and level names
+  -h, --help            Display this help message
+
+Examples:
+  # Install every package
+  dot install
+  # Install a single package
+  dot install zsh
+  # See what an install would change
+  dot --dry-run install
+  # Discard local edits and match the remote exactly
+  dot upgrade --force
+  # Find files that were edited in the home directory instead of the repository
+  dot doctor
+
+A package is any top-level directory in the repository holding a 'dot-'
+prefixed entry. Only those entries are installed, and each 'dot-' prefix
+becomes a leading dot, so git/dot-config/git/config installs as
+~/.config/git/config. Directories are created for real and only files are
+symlinked, so a file written into the home directory shows up in 'doctor'
+instead of landing silently in the repository.
+EOF
+}
+
+run_command() {
+    # $* joins on the first character of IFS, which is a newline here, so the
+    # log line would otherwise break across the arguments.
+    local IFS=' '
+
+    if [[ ${DRY_RUN} -eq 1 ]]; then
+        log_info "[DRY RUN] Would execute: $*"
+    else
+        log_debug "Executing: $*"
+        "$@"
+    fi
+}
+
+require_command() {
+    local name="$1"
+    if ! command -v "${name}" >/dev/null 2>&1; then
+        log_error "Required command not found: '${name}'"
+        exit 127
+    fi
+    return 0
+}
+
+reject_foreign_options() {
+    # SEEN_FLAGS is space-separated and the global IFS is not, so the split has
+    # to be set for this loop.
+    local allowed=" $1 " flag
+    local IFS=' '
+
+    for flag in ${SEEN_FLAGS}; do
+        case "${allowed}" in
+            *" ${flag} "*) ;;
+            *)
+                log_error "Option --${flag} does not apply to '${COMMAND}'"
+                exit 2
+                ;;
+        esac
+    done
+
+    return 0
+}
+
+reject_operands() {
+    [[ ${#ARGS[@]} -eq 0 ]] && return 0
+    log_error "Command '${COMMAND}' takes no package arguments"
+    exit 2
+}
+
+# Resolves '.' and '..' as text, without touching the filesystem. Sets
+# NORMALIZED_PATH. Symlinks are not followed: the question is where a link
+# points, not what it finally resolves to.
+normalize_path() {
+    local path="$1" component
+    local parts=()
+    local IFS='/'
+
+    # shellcheck disable=SC2206
+    for component in ${path}; do
+        case "${component}" in
+            ''|.) continue ;;
+            ..) [[ ${#parts[@]} -gt 0 ]] && unset "parts[$(( ${#parts[@]} - 1 ))]" ;;
+            *) parts+=("${component}") ;;
+        esac
+    done
+
+    if [[ ${#parts[@]} -eq 0 ]]; then
+        NORMALIZED_PATH="/"
+    else
+        NORMALIZED_PATH="/${parts[*]}"
+    fi
+
+    return 0
+}
+
+# Sets RELATIVE_PATH to 'to' as written from inside directory 'from'. Links are
+# relative so the home directory and the checkout can move together.
+relative_path() {
+    local from="$1" to="$2" i common=0 out=""
+    local from_parts=() to_parts=()
+    local IFS='/'
+
+    # shellcheck disable=SC2206
+    from_parts=(${from})
+    # shellcheck disable=SC2206
+    to_parts=(${to})
+
+    while [[ ${common} -lt ${#from_parts[@]} && ${common} -lt ${#to_parts[@]} ]]; do
+        [[ "${from_parts[common]}" == "${to_parts[common]}" ]] || break
+        common=$(( common + 1 ))
+    done
+
+    for (( i = common; i < ${#from_parts[@]}; i++ )); do
+        out="${out}../"
+    done
+    for (( i = common; i < ${#to_parts[@]}; i++ )); do
+        out="${out}${to_parts[i]}/"
+    done
+
+    RELATIVE_PATH="${out%/}"
+    return 0
+}
+
+# git/dot-config/git/config -> $TARGET/.config/git/config
+# The first component is the package name and is dropped.
+target_path_for() {
+    local rel="$1" out="" component
+    local IFS='/'
+
+    case "${rel}" in
+        */*) rel="${rel#*/}" ;;
+        *)   TARGET_PATH="${TARGET}"; return 0 ;;
+    esac
+
+    # shellcheck disable=SC2206
+    for component in ${rel}; do
+        case "${component}" in
+            dot-*) component=".${component#dot-}" ;;
+        esac
+        out="${out}/${component}"
+    done
+
+    TARGET_PATH="${TARGET}${out}"
+    return 0
+}
+
+# Sets LINK_OWNER to the package a symlink points into, or empty when the path
+# is not a symlink or points outside the repository. Every ownership question
+# in the script goes through here.
+link_owner() {
+    local link="$1" destination rest
+    LINK_OWNER=""
+
+    [[ -L "${link}" ]] || return 0
+
+    destination="$(readlink "${link}")"
+    [[ "${destination}" != /* ]] && destination="${link%/*}/${destination}"
+    normalize_path "${destination}"
+
+    case "${NORMALIZED_PATH}" in
+        "${DOTFILES}"/*) ;;
+        *) return 0 ;;
+    esac
+
+    rest="${NORMALIZED_PATH#"${DOTFILES}"/}"
+    LINK_OWNER="${rest%%/*}"
+    return 0
+}
+
+# A package is any top-level directory holding a dot- prefixed entry, so adding
+# one to the repository is enough to install it.
+is_package() {
+    local dir="$1" entry
+    [[ -d "${DOTFILES}/${dir}" ]] || return 1
+    for entry in "${DOTFILES}/${dir}"/dot-*; do
+        [[ -e "${entry}" ]] && return 0
+    done
+    return 1
+}
+
+is_selected() {
+    local candidate="$1" package
+    for package in ${PACKAGES[@]+"${PACKAGES[@]}"}; do
+        [[ "${package}" == "${candidate}" ]] && return 0
+    done
+    return 1
+}
+
+discover_packages() {
+    local dir name
+    PACKAGES=()
+
+    for dir in "${DOTFILES}"/*/; do
+        name="${dir%/}"
+        name="${name##*/}"
+        is_package "${name}" && PACKAGES+=("${name}")
+    done
+
+    if [[ ${#PACKAGES[@]} -eq 0 ]]; then
+        log_error "No packages found in '${DOTFILES}'"
+        exit 1
+    fi
+
+    return 0
+}
+
+resolve_packages() {
+    local name
+
+    if [[ ${#ARGS[@]} -eq 0 ]]; then
+        discover_packages
+        return 0
+    fi
+
+    PACKAGES=()
+    for name in "${ARGS[@]}"; do
+        if ! is_package "${name}"; then
+            log_error "Not a package: '${name}'"
+            exit 2
+        fi
+        PACKAGES+=("${name}")
+    done
+
+    return 0
+}
+
+plan_link() {
+    local package="$1" link="$2" source="$3"
+
+    PLAN_LINKS+=("${link}")
+    PLAN_SOURCES+=("${source}")
+
+    if [[ -L "${link}" ]]; then
+        link_owner "${link}"
+        if [[ "${NORMALIZED_PATH}" == "${source}" ]]; then
+            PLAN_ACTIONS+=("ok")
+        elif [[ "${LINK_OWNER}" == "${package}" ]]; then
+            PLAN_ACTIONS+=("replace")
+        elif [[ -n "${LINK_OWNER}" ]]; then
+            PLAN_ACTIONS+=("conflict")
+            PLAN_CONFLICTS+=("${link}: already linked into package '${LINK_OWNER}'")
+        else
+            PLAN_ACTIONS+=("conflict")
+            PLAN_CONFLICTS+=("${link}: symlink to '${NORMALIZED_PATH}', outside the repository")
+        fi
+        return 0
+    fi
+
+    if [[ -e "${link}" ]]; then
+        # The failure this layout exists to catch: a real file here means an
+        # edit landed in the home directory and never reached the repository.
+        PLAN_ACTIONS+=("conflict")
+        PLAN_CONFLICTS+=("${link}: real file where a symlink into '${package}' was expected")
+        return 0
+    fi
+
+    PLAN_ACTIONS+=("create")
+    return 0
+}
+
+plan_dir() {
+    local link="$1"
+
+    if [[ -L "${link}" ]]; then
+        PLAN_CONFLICTS+=("${link}: symlink where a directory was expected, remove it and rerun")
+    elif [[ -e "${link}" && ! -d "${link}" ]]; then
+        PLAN_CONFLICTS+=("${link}: file where a directory was expected")
+    elif [[ ! -d "${link}" ]]; then
+        PLAN_DIRS+=("${link}")
+    fi
+
+    return 0
+}
+
+plan_contents() {
+    local package="$1" path rel top
+
+    while IFS= read -r path; do
+        rel="${path#"${DOTFILES}/${package}"/}"
+        # Only dot- prefixed entries at the package root are installed, so a
+        # README or a notes directory can sit beside them untouched.
+        case "${rel}" in
+            dot-*) ;;
+            *) continue ;;
+        esac
+
+        # A root entry decides where the stale-link scan starts.
+        case "${rel}" in
+            */*) top=0 ;;
+            *) top=1 ;;
+        esac
+
+        target_path_for "${package}/${rel}"
+
+        if [[ -d "${path}" && ! -L "${path}" ]]; then
+            plan_dir "${TARGET_PATH}"
+            [[ ${top} -eq 1 ]] && SCAN_DIRS+=("${TARGET_PATH}")
+        else
+            plan_link "${package}" "${TARGET_PATH}" "${path}"
+            [[ ${top} -eq 1 ]] && SCAN_ROOT=1
+        fi
+    done < <(find "${DOTFILES}/${package}" -mindepth 1 -print | sort)
+
+    return 0
+}
+
+is_planned_link() {
+    local candidate="$1" i
+    for (( i = 0; i < ${#PLAN_LINKS[@]}; i++ )); do
+        [[ "${PLAN_LINKS[i]}" == "${candidate}" ]] && return 0
+    done
+    return 1
+}
+
+# Adds links that point into a selected package but are not in the plan. The
+# scan reads the home directory rather than the package, because the file that
+# would name the link has already been renamed or deleted.
+scan_for_stale() {
+    local link
+
+    while IFS= read -r link; do
+        link_owner "${link}"
+        [[ -n "${LINK_OWNER}" ]] || continue
+        is_selected "${LINK_OWNER}" || continue
+        is_planned_link "${link}" && continue
+        PLAN_REMOVE+=("${link}")
+    done < <("$@" -type l -print | sort)
+
+    return 0
+}
+
+build_plan() {
+    local package dir
+
+    PLAN_DIRS=()
+    PLAN_LINKS=()
+    PLAN_SOURCES=()
+    PLAN_ACTIONS=()
+    PLAN_REMOVE=()
+    PLAN_CONFLICTS=()
+    SCAN_DIRS=()
+    SCAN_ROOT=0
+
+    for package in "${PACKAGES[@]}"; do
+        plan_contents "${package}"
+    done
+
+    for dir in ${SCAN_DIRS[@]+"${SCAN_DIRS[@]}"}; do
+        [[ -d "${dir}" ]] && scan_for_stale find "${dir}"
+    done
+
+    [[ ${SCAN_ROOT} -eq 1 ]] && scan_for_stale find "${TARGET}" -maxdepth 1
+
+    return 0
+}
+
+abort_on_conflicts() {
+    local conflict
+
+    [[ ${#PLAN_CONFLICTS[@]} -eq 0 ]] && return 0
+
+    for conflict in "${PLAN_CONFLICTS[@]}"; do
+        log_error "${conflict}"
+    done
+    log_error "Found ${#PLAN_CONFLICTS[@]} conflict(s), nothing was changed"
+    exit 1
+}
+
+apply_plan() {
+    local i dir link
+    local linked=0 removed=0
+
+    for dir in ${PLAN_DIRS[@]+"${PLAN_DIRS[@]}"}; do
+        run_command mkdir -p "${dir}"
+    done
+
+    for link in ${PLAN_REMOVE[@]+"${PLAN_REMOVE[@]}"}; do
+        run_command rm -f "${link}"
+        removed=$(( removed + 1 ))
+    done
+
+    for (( i = 0; i < ${#PLAN_LINKS[@]}; i++ )); do
+        case "${PLAN_ACTIONS[i]}" in
+            create|replace) ;;
+            *) continue ;;
+        esac
+        link="${PLAN_LINKS[i]}"
+        relative_path "${link%/*}" "${PLAN_SOURCES[i]}"
+        # -f replaces a link of ours, -n stops a link to a directory from being
+        # followed and the new link created inside it.
+        run_command ln -sfn "${RELATIVE_PATH}" "${link}"
+        linked=$(( linked + 1 ))
+    done
+
+    log_debug "Linked ${linked} file(s), removed ${removed} stale link(s)"
+    return 0
+}
+
+remove_plan() {
+    local i link
+    local removed=0
+
+    # Ownership is read from the link itself, so a real file or a foreign
+    # symlink at a planned path is left alone.
+    for (( i = 0; i < ${#PLAN_LINKS[@]}; i++ )); do
+        link="${PLAN_LINKS[i]}"
+        link_owner "${link}"
+        [[ -n "${LINK_OWNER}" ]] || continue
+        is_selected "${LINK_OWNER}" || continue
+        run_command rm -f "${link}"
+        removed=$(( removed + 1 ))
+    done
+
+    for link in ${PLAN_REMOVE[@]+"${PLAN_REMOVE[@]}"}; do
+        run_command rm -f "${link}"
+        removed=$(( removed + 1 ))
+    done
+
+    log_debug "Removed ${removed} link(s)"
+    return 0
+}
+
+prune_empty_dirs() {
+    local root dir
+
+    # Nothing was removed under --dry-run, so nothing can be pruned either.
+    [[ ${DRY_RUN} -eq 1 ]] && return 0
+
+    for root in ${SCAN_DIRS[@]+"${SCAN_DIRS[@]}"}; do
+        [[ -d "${root}" ]] || continue
+        # -depth visits children first, and rmdir refuses a directory that is
+        # not empty, so anything you put there survives.
+        while IFS= read -r dir; do
+            rmdir "${dir}" 2>/dev/null || true
+        done < <(find "${root}" -depth -type d -print)
+    done
+
+    return 0
+}
+
+report_problem() {
+    log_warning "$*"
+    PROBLEMS=$(( PROBLEMS + 1 ))
+    return 0
+}
+
+check_git_state() {
+    local status branch upstream ahead
+
+    if [[ ! -d "${DOTFILES}/.git" ]]; then
+        report_problem "'${DOTFILES}' is not a git checkout, so local changes cannot be committed or recovered. Run 'dot upgrade' to convert it"
+        return 0
+    fi
+
+    status="$(git -C "${DOTFILES}" status --porcelain)"
+    if [[ -n "${status}" ]]; then
+        log_info "Uncommitted changes in '${DOTFILES}':"
+        printf '%s\n' "${status}" >&2
+    fi
+
+    branch="$(git -C "${DOTFILES}" rev-parse --abbrev-ref HEAD)"
+    upstream="$(git -C "${DOTFILES}" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+    if [[ -z "${upstream}" ]]; then
+        report_problem "Branch '${branch}' has no upstream, so 'dot upgrade' cannot fetch"
+        return 0
+    fi
+
+    ahead="$(git -C "${DOTFILES}" rev-list --count "${upstream}..HEAD" 2>/dev/null || echo 0)"
+    if [[ ${ahead} -gt 0 ]]; then
+        log_warning "Branch '${branch}' is ${ahead} commit(s) ahead of '${upstream}' and not pushed"
+    fi
+
+    return 0
+}
+
+cmd_install() {
+    reject_foreign_options "dry-run quiet verbose"
+    resolve_packages
+
+    log_info "Installing ${#PACKAGES[@]} package(s)"
+    build_plan
+    abort_on_conflicts
+    apply_plan
+    log_info "Done"
+    return 0
+}
+
+cmd_uninstall() {
+    reject_foreign_options "dry-run quiet verbose"
+    resolve_packages
+
+    log_info "Uninstalling ${#PACKAGES[@]} package(s)"
+    # No conflict check: uninstall removes what it owns and ignores the rest.
+    build_plan
+    remove_plan
+    prune_empty_dirs
+    log_info "Done"
+    return 0
+}
+
+convert_to_checkout() {
+    log_warning "'${DOTFILES}' is not a git checkout, converting it"
+
+    run_command git -C "${DOTFILES}" init -q
+    run_command git -C "${DOTFILES}" remote add origin "${REPOSITORY}"
+    run_command git -C "${DOTFILES}" fetch -q origin "${BRANCH}"
+    run_command git -C "${DOTFILES}" symbolic-ref HEAD "refs/heads/${BRANCH}"
+    # --mixed, not --hard: the files on disk are left alone, so anything
+    # already edited here survives as a modification instead of being lost.
+    run_command git -C "${DOTFILES}" reset -q --mixed "origin/${BRANCH}"
+    run_command git -C "${DOTFILES}" branch -q --set-upstream-to="origin/${BRANCH}" "${BRANCH}"
+
+    [[ ${DRY_RUN} -eq 1 ]] && return 0
+
+    if [[ -n "$(git -C "${DOTFILES}" status --porcelain)" ]]; then
+        log_warning "The downloaded files differ from '${BRANCH}'. Review 'git -C ${DOTFILES} status' before committing"
+    fi
+
+    return 0
+}
+
+cmd_upgrade() {
+    reject_foreign_options "dry-run force quiet verbose"
+    reject_operands
+    require_command git
+
+    [[ -d "${DOTFILES}/.git" ]] || convert_to_checkout
+
+    if [[ -n "$(git -C "${DOTFILES}" status --porcelain)" ]]; then
+        if [[ ${FORCE} -eq 0 ]]; then
+            log_error "Uncommitted changes in '${DOTFILES}'. Commit them, or rerun with --force to discard them"
             exit 1
+        fi
+        log_warning "Discarding uncommitted changes in '${DOTFILES}'"
+        run_command git -C "${DOTFILES}" reset -q --hard HEAD
+        run_command git -C "${DOTFILES}" clean -qfd
+    fi
+
+    log_info "Fetching the latest dotfiles"
+    # --ff-only, so an upgrade never merges and never rewrites local history.
+    # It fails loudly instead, which is recoverable.
+    run_command git -C "${DOTFILES}" pull --ff-only --quiet
+
+    discover_packages
+    log_info "Relinking ${#PACKAGES[@]} package(s)"
+    build_plan
+    abort_on_conflicts
+    apply_plan
+    log_info "Done"
+    return 0
+}
+
+cmd_macos_setup() {
+    reject_foreign_options "dry-run quiet verbose"
+    reject_operands
+
+    if [[ "$(uname -s)" != "Darwin" ]]; then
+        log_error "Command 'macos-setup' requires macOS, found '$(uname -s)'"
+        exit 1
+    fi
+
+    if [[ ! -f "${DOTFILES}/macos-setup.sh" ]]; then
+        log_error "${DOTFILES}/macos-setup.sh: not found"
+        exit 1
+    fi
+
+    run_command bash "${DOTFILES}/macos-setup.sh"
+    return 0
+}
+
+cmd_doctor() {
+    reject_foreign_options "quiet verbose"
+    reject_operands
+
+    PROBLEMS=0
+    command -v git >/dev/null 2>&1 || report_problem "Required command not found: 'git'"
+    check_git_state
+    discover_packages
+
+    # doctor and install read the same plan, so what doctor reports and what
+    # install would do cannot drift apart.
+    build_plan
+
+    local conflict link i
+    for conflict in ${PLAN_CONFLICTS[@]+"${PLAN_CONFLICTS[@]}"}; do
+        report_problem "${conflict}"
+    done
+
+    for (( i = 0; i < ${#PLAN_LINKS[@]}; i++ )); do
+        case "${PLAN_ACTIONS[i]}" in
+            create) report_problem "${PLAN_LINKS[i]}: not installed" ;;
+            replace) report_problem "${PLAN_LINKS[i]}: symlink points at the wrong file" ;;
+        esac
+    done
+
+    for link in ${PLAN_REMOVE[@]+"${PLAN_REMOVE[@]}"}; do
+        report_problem "${link}: stale link into the repository, run 'dot install' to clear it"
+    done
+
+    if [[ ${PROBLEMS} -gt 0 ]]; then
+        log_error "Found ${PROBLEMS} problem(s)"
+        exit 1
+    fi
+
+    log_info "Checked ${#PACKAGES[@]} package(s), no problems found"
+    return 0
+}
+
+parse_arguments() {
+    local operands=()
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            # --opt=value and bundled short flags, rewritten into the plain
+            # forms and reprocessed. Both are what users type, and without
+            # these arms they arrive as unknown options.
+            --*=*)
+                set -- "${1%%=*}" "${1#*=}" "${@:2}"
+                ;;
+            -[!-]?*)
+                local rest="${1#-}" split=() ch
+                while [[ -n "${rest}" ]]; do
+                    ch="${rest:0:1}"
+                    split+=("-${ch}")
+                    rest="${rest:1}"
+                done
+                set -- "${split[@]}" "${@:2}"
+                ;;
+            --dry-run)
+                SEEN_FLAGS="${SEEN_FLAGS} dry-run"
+                DRY_RUN=1
+                shift
+                ;;
+            -f|--force)
+                SEEN_FLAGS="${SEEN_FLAGS} force"
+                FORCE=1
+                shift
+                ;;
+            -q|--quiet)
+                SEEN_FLAGS="${SEEN_FLAGS} quiet"
+                QUIET=1
+                shift
+                ;;
+            -v|--verbose)
+                SEEN_FLAGS="${SEEN_FLAGS} verbose"
+                VERBOSE=1
+                shift
+                ;;
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            # End of options, so an operand named -weird is reachable.
+            --)
+                shift
+                operands+=(${@+"$@"})
+                break
+                ;;
+            -*)
+                log_error "Unknown option: $1"
+                usage
+                exit 2
+                ;;
+            # Operands are collected rather than ending the loop, so options
+            # written after the command are still parsed. 'dot upgrade --force'
+            # is the natural way to type it.
+            *)
+                operands+=("$1")
+                shift
+                ;;
+        esac
+    done
+
+    ARGS=(${operands[@]+"${operands[@]}"})
+
+    # Derived once, after the loop, so the result does not depend on the order
+    # the flags were given. Verbose is applied last and therefore wins.
+    LOG_LEVEL=1
+    [[ ${QUIET} -eq 1 ]] && LOG_LEVEL=0
+    [[ ${VERBOSE} -eq 1 ]] && LOG_LEVEL=2
+
+    # Explicit, because the line above returns non-zero when VERBOSE is 0.
+    return 0
+}
+
+main() {
+    log_init
+
+    parse_arguments "$@"
+
+    COMMAND="${ARGS[0]:-}"
+    if [[ -z "${COMMAND}" ]]; then
+        usage
+        exit 2
+    fi
+
+    # Drop the command, leaving the operands. Spelled out rather than sliced,
+    # because a slice of a one-element array trips set -u on bash 3.2.
+    if [[ ${#ARGS[@]} -gt 1 ]]; then
+        ARGS=("${ARGS[@]:1}")
+    else
+        ARGS=()
+    fi
+
+    case "${COMMAND}" in
+        install)     cmd_install ;;
+        uninstall)   cmd_uninstall ;;
+        upgrade)     cmd_upgrade ;;
+        macos-setup) cmd_macos_setup ;;
+        doctor)      cmd_doctor ;;
+        *)
+            log_error "Unknown command: '${COMMAND}'"
+            usage
+            exit 2
             ;;
     esac
-else
-    echo "$USAGE"
-fi
+}
+
+main "$@"

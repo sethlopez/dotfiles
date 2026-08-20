@@ -9,7 +9,6 @@ brew 'ripgrep'
 brew 'sendmidi'
 brew 'shellcheck'
 brew 'sqlite'
-brew 'stow'
 brew 'tree'
 brew 'zellij'
 
