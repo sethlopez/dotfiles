@@ -14,7 +14,6 @@ brew 'tree'
 brew 'zellij'
 
 cask '1password'
-cask 'alacritty'
 cask 'cleanshot'
 cask 'contexts'
 cask 'firefox'

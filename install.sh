@@ -9,7 +9,6 @@ set -euo pipefail
 
 echo "Installing dotfiles..."
 stow --dotfiles --no-folding \
-    alacritty \
     ghostty \
     git \
     ideavim \

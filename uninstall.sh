@@ -9,7 +9,6 @@ set -euo pipefail
 
 echo "Uninstalling dotfiles..."
 stow --delete --dotfiles --no-folding \
-    alacritty \
     ghostty \
     git \
     ideavim \
