@@ -5,8 +5,8 @@ initial-window = true
 macos-auto-secure-input = false
 
 # window defaults
-window-height = 60
-window-width = 160
+window-height = 80
+window-width = 250
 window-padding-balance = true
 window-padding-color = extend
 window-step-resize = true
