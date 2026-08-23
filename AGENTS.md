@@ -4,9 +4,6 @@ This repository contains my macOS user-level configuration files, a.k.a "dotfile
 
 **Only touch files within this repository.** Installed files in `$HOME` are symlinks into this repository. Editing through a symlink reaches the repository. Creating new files in `$HOME` does not, and will be invisible to git.
 
-**Never commit secrets.** This is a public repository. No tokens, keys, or credentials are allowed. If you find one in this repository, immediately stop and instruct me to rotate the secret.
-
-
 ## Layout
 
 **Packages are top-level directories containing a `dot-*` entry.** Only `dot-` prefixed entries are installed, and each `dot-` becomes a leading period. Everything within an entry is installed regardless of name. Directories are created for real and only files are symlinked, using relative links. A real directory in `$HOME` is expected; a real *file* where a link belongs is drift.
@@ -38,5 +35,3 @@ This repository contains my macOS user-level configuration files, a.k.a "dotfile
 **Verify before committing.** Run the test suite for `dot` changes, then `dot install` and `dot doctor`, then commit.
 
 **Commit changes, but never push or rewrite history.** Only the user will do that.
-
-**Write short, capitalized, imperative commit subjects with no prefix and no body,** matching the existing log: "Add fd to Brewfile", "Update nvim config".
