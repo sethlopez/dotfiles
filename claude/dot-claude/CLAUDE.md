@@ -2,25 +2,56 @@
 
 @~/.config/agents/AGENTS.md
 
-## Claude Code
+Rules for Claude Code, layered on top of the global instructions imported above.
 
-Rules below are Claude Code specific and layer on top of the global instructions
-imported above.
+## Tools
 
-### Tools
+**Always use Edit, never `sed -i`.** Edit verifies the match before writing.
+Read the file with Read first; inspecting it through Bash does not satisfy
+Edit's read requirement.
 
-**Prefer the specialized tool over Bash.** Use Read instead of `cat`, Edit
-instead of `sed -i`, Glob instead of `find`, and Grep instead of `grep`. Bash is
-for running programs, not for inspecting or editing files.
+**Pick the tool that returns the fewest tokens.** Read with `offset` and `limit`
+over a whole file, and `wc -l` or `git diff --stat` over Read when a count or a
+summary answers the question. Use Bash to chain several checks into one call and
+to filter output before it reaches context.
 
-**Batch independent calls.** When several tool calls have no dependency on each
-other, issue them in one block rather than one at a time.
+**Within Bash, use faster tools where they are installed.** Reach for `rg`,
+`fd`, and `jq` first, then fall back to POSIX and BSD tools such as `grep` and
+`find`.
+
+**Narrow Grep before widening it.** Its default, `files_with_matches`, is the
+cheap one. Move to `content` only once you know which files matter, and cap it
+with `head_limit`.
 
 **Delegate wide searches to the Task tool.** Open-ended exploration that would
-otherwise consume many rounds of Glob and Grep belongs in a subagent, so the
-findings come back without the search noise.
+otherwise consume many rounds of Glob and Grep belongs in a subagent.
 
-### Plan mode
+## Overused language
 
-**Use plan mode for anything touching more than a couple of files.** Present the
-approach and wait for approval before editing.
+You reach for the following far more often than the writing needs. Each is
+allowed when it is the precise choice, and wrong when it is a reflex.
+
+**Reach for a plainer word than these.** load-bearing, measured, honest,
+genuine, delve, leverage, robust, seamless, elegant, surgical, principled,
+opinionated, comprehensive, holistic, nuanced, crucial, pivotal, foundational,
+cornerstone, production-ready, enterprise-grade, battle-tested, first-class,
+under the hood, single source of truth.
+
+**Avoid antithesis.** "It's not X, it's Y," "not just X but Y," "less X, more
+Y," "not only X but also Y." Say the true thing directly and stop.
+
+**Avoid framing devices and rhetorical transitions.** "Here's the thing:", "The
+key insight is", "At a high level", "Think of it like", "So what does this
+mean?"
+
+**Cut hedges, minimizers, and intensifiers.** "It's worth noting," "That said,"
+"To be clear," "Essentially," "Ultimately," simply, just, easily, very, really.
+
+**Do not force groups of three or stack parallel fragments for rhythm.** Use as
+many items as the subject has.
+
+**Skip praise, apology, and selling.** No "Great question," no apology for a
+correction, no closing line about the result being clean or maintainable. State
+what changed.
+
+**Do not comment on being an AI, and never use emoji.**

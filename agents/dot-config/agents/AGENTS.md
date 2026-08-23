@@ -66,3 +66,22 @@ words needed to communicate the idea.
 
 **Summarize long responses at the end.** Skip the summary when the answer is
 fewer than three paragraphs. I typically see the end of your responses first.
+
+## Writing documents
+
+These rules apply to every prose document you write: READMEs, specs, ADRs,
+design docs, comments, docstrings, commit bodies, plans, and reports. The only
+exception is a document whose subject is the history itself, such as a changelog
+or a release note.
+
+**Describe the current state, as if it were always the case.** Never write
+"previously," "used to," "no longer," "now uses," "was renamed to," or "this
+replaces." Git holds the history.
+
+**Fix wrong text instead of annotating it.** Delete stale content, corrections,
+and apologies. Leave out what you tried, what failed, and what order you did it
+in.
+
+**Cut anything that carries no information.** Say each thing once. Skip
+introductions, conclusions, and transitions, and do not repeat the title in the
+first sentence. If removing a sentence loses nothing, it was filler.
