@@ -38,11 +38,6 @@ $HOME/dotfiles/dot install
 
 ## Managing dotfiles
 
-After installation, a `dot` command should be available on the `PATH`. The `dot`
-command can always be run from `$HOME/dotfiles/dot`, if not.
-
-Use the `dot` command to manage dotfiles. Usage:
-
-```sh
-dot [ install | macos-setup | upgrade | uninstall ]
-```
+After installation, a `dot` command should be available on the `PATH` that can
+be used to manage dotfiles. The `dot` command can always be run from
+`$HOME/dotfiles/dot`, if not.
