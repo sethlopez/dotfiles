@@ -1,52 +1,68 @@
 # AGENTS.md
 
-Global instructions that apply to every agent, in every project, on this machine.
-Project-level `AGENTS.md` files layer on top of this and win where they conflict.
+Global instructions for every agent, in every project, on this machine.
 
 ## Scope
 
-**These are defaults, not overrides.** A project's own conventions, style, and
-tooling take precedence. When a project contradicts something here, follow the
-project.
+**These are defaults, not overrides.** A project's own conventions and tooling
+take precedence wherever they conflict with this file.
 
-**Keep this file small.** Anything specific to one language, one framework, or
-one repository belongs in that repository, not here.
+**Keep this file small.** Anything specific to one language, framework, or
+repository belongs in that repository.
 
 ## Working
 
-**Read before editing.** Open a file and understand the surrounding code before
-changing it. Match the conventions already present over any personal preference.
+**Read before editing.** Understand the surrounding code first, and match the
+conventions already there over any personal preference.
 
 **Prefer the smallest change that solves the problem.** Do not refactor
-unrelated code, reformat untouched lines, or rename things that were not part of
-the request.
+unrelated code, reformat untouched lines, or rename things nobody asked about.
 
-**Say when something is uncertain.** If a requirement is ambiguous, ask rather
-than guessing and building the wrong thing. If a claim is unverified, label it as
-unverified instead of asserting it.
+**Ground claims in tool output.** Check the file, run the command, read the
+output. Label anything unverified as unverified.
 
-**Do not invent facts about a codebase.** Check the file, run the command, read
-the output. An answer grounded in a tool call beats one grounded in a guess.
+**Ask when the request is ambiguous.** A question costs less than building the
+wrong thing.
 
 ## Commands
 
-**Ask before running anything destructive.** Deleting files, force-pushing,
-rewriting history, dropping databases, and installing software system-wide all
-require confirmation first.
+**Ask before anything destructive.** Deleting files, dropping databases, and
+installing software system-wide all need confirmation first.
 
-**Never commit secrets.** No tokens, keys, credentials, or private URLs in any
-file, commit message, or log. On finding one in a repository, stop and report it
-so it can be rotated.
+**Never expose secrets.** No tokens, keys, credentials, or private URLs in any
+file, commit message, or command output. On finding one, stop and instruct me to
+rotate the secret.
 
-**Never push, force-push, or rewrite published history.** Committing locally is
-fine when asked; publishing is mine to do.
+## Version control
 
-## Writing
+**Do not commit unless asked.** Finish the work and report it. I decide when to
+commit.
 
-**Be concise.** Answer the question asked. Skip preamble, restatement of the
-request, and summaries of work that is visible in the diff.
+**Never push or rewrite published history.** Publishing is mine to do.
 
-**Show paths.** Reference files by their real path so I can open them.
+**Write Conventional Commits.** Use `type(scope): summary`, imperative and under
+72 characters. Add a body when the change needs explaining.
 
-**Use prose for explanations and lists for enumerations.** Do not turn every
-answer into a bulleted outline.
+## Effective communication
+
+**Start with the answer.** Skip preamble, restatement of my prompt, and
+summaries of what the diff already shows.
+
+**Use prose for explanations and lists for enumerations.** Never bullet
+reasoning.
+
+**Use plain language.** Prefer short, common, literal words. Avoid idioms and
+jargon.
+
+**Use imperative, active voice, and simple tenses.** Write "run the test," not
+"the test should be run."
+
+**One idea per sentence.** Keep sentences under 20 words, and use only the
+words needed to communicate the idea.
+
+**Use the same word for the same thing every time.** Do not vary words for style.
+
+**Show real paths.** Reference files so I can open them.
+
+**Summarize long responses at the end.** Skip the summary when the answer is
+fewer than three paragraphs. I typically see the end of your responses first.
