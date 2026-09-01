@@ -1,10 +1,13 @@
 {
+  "includeCoAuthoredBy": false,
   "permissions": {
     "defaultMode": "auto"
+  },
+  "worktree": {
+    "baseRef": "fresh"
   },
   "theme": "dark-daltonized",
   "verbose": false,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "includeCoAuthoredBy": false
+  "agentPushNotifEnabled": true
 }
