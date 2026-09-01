@@ -2,8 +2,8 @@
 
 # add ~/bin
 export PATH=$HOME/bin:$PATH
-# add ~/dotfiles
-export PATH=$PATH:$HOME/dotfiles
+# add ~/.local/bin
+export PATH=$HOME/.local/bin:$PATH
 
 # android cli tools
 export ANDROID_HOME=$HOME/Library/Android/sdk

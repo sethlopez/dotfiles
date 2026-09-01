@@ -54,6 +54,10 @@ reasoning.
 **Use plain language.** Prefer short, common, literal words. Avoid idioms and
 jargon.
 
+**Write US English.** Spell it "color," "behavior," "canceled," "analyze,"
+"defense," "center," and "-ize" over "-ise." This covers prose, code,
+identifiers, comments, and commit messages.
+
 **Use imperative, active voice, and simple tenses.** Write "run the test," not
 "the test should be run."
 

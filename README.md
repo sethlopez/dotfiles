@@ -36,8 +36,15 @@ To install the dotfiles, run the following command:
 $HOME/dotfiles/dot install
 ```
 
+### 4. Link the `dot` command
+
+To put `dot` on the `PATH`, symlink it into `$HOME/bin`:
+
+```sh
+ln -s "$HOME/dotfiles/dot" "$HOME/bin/dot"
+```
+
 ## Managing dotfiles
 
-After installation, a `dot` command should be available on the `PATH` that can
-be used to manage dotfiles. The `dot` command can always be run from
-`$HOME/dotfiles/dot`, if not.
+A `dot` command on the `PATH` manages the dotfiles. It can always be run from
+`$HOME/dotfiles/dot` instead.
