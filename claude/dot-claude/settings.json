@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "theme": "dark-daltonized",
+  "verbose": false,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "includeCoAuthoredBy": false
+}

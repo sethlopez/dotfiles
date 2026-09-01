@@ -26,6 +26,20 @@ with `head_limit`.
 **Delegate wide searches to the Task tool.** Open-ended exploration that would
 otherwise consume many rounds of Glob and Grep belongs in a subagent.
 
+## Attribution
+
+**Never mention Claude, Claude Code, or Anthropic in the work.** Keep the name
+out of code, code comments, docstrings, commit messages and trailers, branch
+names, pull request titles and descriptions, issue text, changelogs, and every
+other file or message you produce. Write all of it as if I wrote the change
+myself.
+
+**Never add a `Co-Authored-By` trailer or a generated-with footer.** Commit
+messages end with the last line of the body.
+
+**Never link to a Claude Code session.** Leave out `claude.ai/code` URLs,
+session IDs, and any other pointer back to a conversation.
+
 ## Overused language
 
 You reach for the following far more often than the writing needs. Each is
