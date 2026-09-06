@@ -18,6 +18,9 @@
   "modelSettings": {
     "claude-fable-5-1": {
       "effortLevel": "medium"
+    },
+    "claude-opus-5": {
+      "effortLevel": "medium"
     }
   },
   "theme": "dark-daltonized",
