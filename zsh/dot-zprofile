@@ -1,0 +1,22 @@
+#==============================================================================#
+# login shell environment                                                      #
+#                                                                              #
+# runs once per login shell, after /etc/zprofile has run path_helper           #
+#==============================================================================#
+
+# drop duplicate entries from PATH automatically
+# this must precede the sources below, so later additions dedupe as they arrive
+typeset -U path PATH
+
+#==============================================================================#
+# sources                                                                      #
+#==============================================================================#
+
+# load exports
+source "$HOME/.exports"
+
+# load private exports
+test -e "$HOME/.private/exports" && source "$HOME/.private/exports"
+
+# a failed test above must not become the exit status of this file
+true

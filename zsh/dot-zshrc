@@ -54,7 +54,12 @@ setopt interactive_comments
 
 #-- Initialization -------------------------------------------------------------
 
+# drop duplicate entries from fpath, since brew shellenv adds site-functions too
+typeset -U fpath
+
 # add completions installed via brew to the fpath
+# this repeats what brew shellenv does in ~/.zprofile, because fpath is not
+# exported, so a non-login interactive shell never inherits it
 if command -v brew > /dev/null 2>&1; then
     fpath=("$(brew --prefix)/share/zsh/site-functions" $fpath)
 fi
@@ -128,15 +133,15 @@ colors
 # load private zshrc
 test -e "$HOME/.private/zshrc" && source "$HOME/.private/zshrc"
 
-# load exports and aliases
-source "$HOME/.exports"
+# load aliases
+# exports load from ~/.zprofile, because they only need to be set once
 source "$HOME/.aliases"
 
-# load private exports and aliases
-test -e "$HOME/.private/exports" && source "$HOME/.private/exports"
+# load private aliases
 test -e "$HOME/.private/aliases" && source "$HOME/.private/aliases"
 
-# load fzf integration
+# load fzf configuration and integration
+source "$HOME/.fzfrc"
 command -v "fzf" > /dev/null 2>&1 && source <(fzf --zsh)
 
 #==============================================================================#
@@ -196,7 +201,7 @@ function precmd() {
     test -n "$git_info" && info_line="$info_line $git_info"
 
     local exit_code="%(?..%B%F{red}%?%f%b )"
-    local prompt_symbol="%(!.%B%F{red}#>%f%b.%B%F{green}>%f%b "
+    local prompt_symbol="%(!.%B%F{red}#>%f%b.%B%F{green}>%f%b) "
     local prompt_line="$exit_code$prompt_symbol"
 
     local newline

@@ -1,18 +1,35 @@
+#==============================================================================#
+# environment                                                                  #
+#                                                                              #
+# POSIX sh, so bash and zsh can both source it                                 #
+# zsh sources this from ~/.zprofile                                            #
+#==============================================================================#
+
+#-- Homebrew -------------------------------------------------------------------
+
+if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 #-- Path -----------------------------------------------------------------------
 
+# add mise shims
+export PATH="$HOME/.local/share/mise/shims:$PATH"
 # add ~/bin
-export PATH=$HOME/bin:$PATH
+export PATH="$HOME/bin:$PATH"
 # add ~/.local/bin
-export PATH=$HOME/.local/bin:$PATH
+export PATH="$HOME/.local/bin:$PATH"
 # add ~/.cargo/bin
-export PATH=$HOME/.cargo/bin:$PATH
+export PATH="$HOME/.cargo/bin:$PATH"
 
-# android cli tools
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-export PATH=$PATH:$ANDROID_HOME/emulator
+#-- Android --------------------------------------------------------------------
+
+# ANDROID_HOME is the current variable; ANDROID_SDK_ROOT is deprecated
+# see: https://developer.android.com/tools/variables
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+# adb lives in platform-tools, and the avd aliases need emulator
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+export PATH="$PATH:$ANDROID_HOME/emulator"
 
 #-- SSH ------------------------------------------------------------------------
 
@@ -23,58 +40,7 @@ if [ -S "$_op_agent_sock" ]; then
 fi
 unset _op_agent_sock
 
-#-- fzf ------------------------------------------------------------------------
-
-if command -v "fd" > /dev/null 2>&1; then
-    export FZF_DEFAULT_COMMAND="fd --type file --strip-cwd-prefix --hidden --follow --exclude .git"
-    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-    export FZF_ALT_C_COMMAND="fd --type directory --strip-cwd-prefix --hidden --follow --exclude .git"
-fi
-
-export FZF_CTRL_T_OPTS="
-  --style minimal
-  --header 'CTRL-Y: Yank | CTRL-P: Preview'
-  --header-first
-  --color header:italic
-  --preview-window 'border-left,hidden'
-  --bind 'ctrl-p:toggle-preview'
-  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'"
-
-if command -v "bat" > /dev/null 2>&1; then
-    export FZF_CTRL_T_OPTS="
-      $FZF_CTRL_T_OPTS
-      --preview 'bat -n --color=always {}'"
-fi
-
-export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix"
-
-export FZF_CTRL_R_OPTS="
-  --header 'CTRL-Y: Yank | CTRL-P: Preview'
-  --header-first
-  --color header:italic
-  --layout reverse
-  --preview 'echo {}'
-  --preview-window 'border-left,wrap,hidden'
-  --bind 'ctrl-p:toggle-preview'
-  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'"
-
-export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix"
-
-export FZF_ALT_C_OPTS="
-  --style minimal
-  --header 'CTRL-P: Preview'
-  --header-first
-  --color header:italic
-  --preview-window 'border-left,hidden'
-  --bind 'ctrl-p:toggle-preview'"
-
-if command -v "tree" > /dev/null 2>&1; then
-    export FZF_ALT_C_OPTS="
-      $FZF_ALT_C_OPTS
-      --preview 'tree -aC -L 2 --gitignore --filesfirst {}'"
-fi
-
-#-- Miscellaneous --------------------------------------------------------------
+#-- Editor ---------------------------------------------------------------------
 
 if command -v "nvim" > /dev/null 2>&1; then
     export EDITOR=nvim

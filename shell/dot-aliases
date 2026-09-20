@@ -54,4 +54,4 @@ alias gpl='git pull'
 
 alias avdl='emulator -list-avds'
 # see: https://developer.android.com/studio/run/emulator-commandline
-function avd() { emulator -avd "$1" -no-snapshot -no-boot-anim -netfast }
+avd() { emulator -avd "$1" -no-snapshot -no-boot-anim -netfast; }
